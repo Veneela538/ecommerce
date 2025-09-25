@@ -1,0 +1,14 @@
+{
+  "common": {
+    "pleaseWait": "Please Wait"
+  },
+  "auth": {
+    "login": {
+      "header": "Login Form",
+      "username": "Username",
+      "password": "Password",
+      "buttonLabel": "Login"
+    },
+    "signup": {}
+  }
+}
