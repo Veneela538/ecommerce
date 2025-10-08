@@ -9,6 +9,18 @@
       "password": "Password",
       "buttonLabel": "Login"
     },
-    "signup": {}
+    "signup": {
+      "header": "Signup Form",
+      "username": "Username",
+      "password": "Password",
+      "title": "Title",
+      "firstName": "First Name",
+      "lastName": "Lastname",
+      "phoneNumber": "Phone Number",
+      "email": "Email",
+      "address": "Address",
+      "pincode": "Pincode",
+      "buttonLabel": "SignUp"
+    }
   }
 }

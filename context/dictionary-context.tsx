@@ -1,7 +1,8 @@
 "use client";
 
-import { getDictionary } from "@/lib/dictionaries";
 import React from "react";
+
+import { getDictionary } from "@/lib/dictionaries";
 
 type Dictionary = Awaited<ReturnType<typeof getDictionary>>;
 

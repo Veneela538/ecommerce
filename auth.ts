@@ -41,7 +41,6 @@ export const authConfig = {
                 return null;
               }
               const parsedResponse = await response.json();
-              console.log("Backend login response:", parsedResponse);
               if (!parsedResponse.status) {
                 throw new Error(
                   parsedResponse.message || "Invalid credentials!"
@@ -63,6 +62,27 @@ export const authConfig = {
           }
           return null;
         }
+
+        // google auth
+
+        if (!credentials?.password) {
+          const authcode = credentials?.username;
+          const response = await fetch(
+            `${env.NEXT_PUBLIC_BACKEND_APP_URL}/auth/login-by-code?authcode=${authcode}`,
+            { method: "GET", credentials: "include" }
+          );
+          if (!response.ok) return null;
+          const parsedResponse = await response.json();
+          if (!parsedResponse.status) return null;
+
+          return {
+            name: parsedResponse.data.name,
+            userId: parsedResponse.data.userId,
+            role: parsedResponse.data.role,
+            accessToken: parsedResponse.data.token,
+          };
+        }
+
         return null;
       },
     }),
@@ -70,6 +90,27 @@ export const authConfig = {
   pages: {
     signIn: "/auth/login",
   },
+  // session: {
+  //   strategy: "jwt",
+  // },
+  // callbacks: {
+  //   async jwt({ token, user }: { token: any; user?: any }) {
+  //     if (user) {
+  //       token.userId = user.userId;
+  //       token.role = user.role;
+  //       token.accessToken = user.accessToken;
+  //     }
+  //     return token;
+  //   },
+  //   async session({ session, token }: { session: any; token: any }) {
+  //     if (token) {
+  //       session.user.userId = token.userId;
+  //       session.user.role = token.role;
+  //       session.user.accessToken = token.accessToken;
+  //     }
+  //     return session;
+  //   },
+  // },
 };
 
 export const { handlers, signIn, signOut, auth } = NextAuth(authConfig);
