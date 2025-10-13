@@ -1,29 +1,22 @@
 import { z } from "zod";
 
-export enum Title {
-  Mr = "Mr",
-  Mrs = "Mrs",
-  Ms = "Ms",
-  Dr = "Dr",
-  Prof = "Prof",
-}
-
-export const SignupFormSchema = z.object({
+export const CredentialsFormSchema = z.object({
   username: z
     .string()
     .min(3, { message: "Username must be at least 3 characters long" })
-    .max(20, { message: "Username must be at most 20 characters long" }),
+    .max(100, { message: "Username must be at most 20 characters long" }),
 
   password: z
     .string()
     .min(6, { message: "Password must be at least 6 characters long" }),
 
-  title: z
-    .enum(Title, {
-      message: "Invalid title",
-    })
-    .or(z.literal("")),
+  confirmPassword: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters long" }),
+});
 
+export const SignupFormSchema = z.object({
+  title: z.string().min(1, { message: "Title is required" }),
   firstName: z
     .string()
     .min(1, { message: "First name is required" })
@@ -40,12 +33,17 @@ export const SignupFormSchema = z.object({
 
   email: z.string().email({ message: "Invalid email address" }),
 
-  address: z.string().min(1, { message: "Address is required" }),
+  addressLane1: z.string().min(1, { message: "Address is required" }),
+
+  addressLane2: z.string().min(1, { message: "Address is required" }),
+
+  addressLane3: z.string().optional(),
+
+  addressLane4: z.string().optional(),
 
   pincode: z
     .string()
     .regex(/^\d{6}$/, { message: "Pincode must be exactly 6 digits" }),
 });
 
-// ✅ Type inference for TS
 export type UserSchemaType = z.infer<typeof SignupFormSchema>;

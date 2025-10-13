@@ -23,7 +23,7 @@ export const signup = async (
       body: values,
     });
     if (response.status) {
-      redirect("/home");
+      redirect("/auth/login");
     }
     return response;
   } catch (error) {
