@@ -4,23 +4,28 @@
   },
   "auth": {
     "login": {
-      "header": "Login Form",
+      "header": "Login",
       "username": "Username",
       "password": "Password",
       "buttonLabel": "Login"
     },
     "signup": {
-      "header": "Signup Form",
+      "header": "Signup",
       "username": "Username",
       "password": "Password",
+      "confirmPassword": "Confirm Password",
       "title": "Title",
       "firstName": "First Name",
       "lastName": "Lastname",
       "phoneNumber": "Phone Number",
       "email": "Email",
-      "address": "Address",
+      "addressLane1": "Address Lane1",
+      "addressLane2": "Address Lane2",
+      "addressLane3": "Address Lane3",
+      "addressLane4": "Address Lane4",
       "pincode": "Pincode",
-      "buttonLabel": "SignUp"
+      "buttonLabel1": "Next",
+      "buttonLabel2": "Signup"
     }
   }
 }

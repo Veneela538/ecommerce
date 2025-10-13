@@ -64,6 +64,7 @@ const LoginForm = () => {
   }
 
   useEffect(() => {
+    if (searchParams.get("authcode")) return;
     startGoogleTransition(() => {
       googleLogin(searchParams.get("authcode"), callbackUrl);
     });
@@ -144,7 +145,13 @@ const LoginForm = () => {
               )}
             </Button>
             <h1>
-              Don’t have an account? <Link href="/auth/signup">Signup</Link>
+              Don’t have an account?{" "}
+              <Link
+                href="/auth/signup"
+                className="text-blue-600 hover:underline ml-1"
+              >
+                Signup
+              </Link>
             </h1>
           </form>
         </Form>
