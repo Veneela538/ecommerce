@@ -143,7 +143,10 @@ function handleResponse(response: Response) {
       if (error.message == "Given jwt token is expired !!") {
         redirect("/auth/session-expired");
       }
-      throw new Error(error.message ?? error);
+      if (typeof error === "object" && error !== null) {
+        throw new Error(JSON.stringify(error));
+      }
+      throw new Error(String(error));
     }
     return data;
   });
