@@ -1,18 +1,26 @@
-import { type DefaultSession } from "next-auth";
+import "next-auth";
+import { JWT as DefaultJWT } from "next-auth/jwt";
 
-export type ExtendedUser = DefaultSession["user"] & {
-  userId: number;
-  name: string;
-  role: "AGENT" | "MANAGER" | "CUSTOMER";
-};
-
-declare module "next-auth" {
-  interface Session {
-    user: ExtendedUser;
+declare module "next-auth/jwt" {
+  interface JWT extends DefaultJWT {
+    userId: number;
+    role: "ADMIN" | "CUSTOMER";
     accessToken: string;
   }
-  // ! FIXME: Not Working
-  // interface jwt {
-  //   user: ExtendedUser
-  // }
+}
+
+declare module "next-auth" {
+  // Extend the built-in User type
+  interface User extends DefaultUser {
+    userId: number;
+    role: "ADMIN" | "CUSTOMER"; // you can also do: "ADMIN" | "CUSTOMER" | "AGENT"
+    accessToken: string;
+    name: string;
+  }
+
+  // Extend the Session type
+  interface Session {
+    user: User;
+    accessToken: string;
+  }
 }

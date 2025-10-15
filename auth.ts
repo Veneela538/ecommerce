@@ -1,4 +1,5 @@
-import NextAuth, { CredentialsSignin } from "next-auth";
+import NextAuth, { CredentialsSignin, Session, User } from "next-auth";
+import { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 import { env } from "./lib/env";
 import { getClientHeader } from "./lib/get-headers";
@@ -51,7 +52,7 @@ export const authConfig = {
                 name: parsedResponse.data.name,
                 userId: parsedResponse.data.userId,
                 role: parsedResponse.data.role,
-                accessToken: parsedResponse.data.accessToken,
+                accessToken: parsedResponse.data.jwt,
               };
             } catch (e) {
               throw new CredentialsSignin(
@@ -90,27 +91,27 @@ export const authConfig = {
   pages: {
     signIn: "/auth/login",
   },
-  // session: {
-  //   strategy: "jwt",
-  // },
-  // callbacks: {
-  //   async jwt({ token, user }: { token: any; user?: any }) {
-  //     if (user) {
-  //       token.userId = user.userId;
-  //       token.role = user.role;
-  //       token.accessToken = user.accessToken;
-  //     }
-  //     return token;
-  //   },
-  //   async session({ session, token }: { session: any; token: any }) {
-  //     if (token) {
-  //       session.user.userId = token.userId;
-  //       session.user.role = token.role;
-  //       session.user.accessToken = token.accessToken;
-  //     }
-  //     return session;
-  //   },
-  // },
+  session: {
+    strategy: "jwt" as const,
+  },
+  callbacks: {
+    async jwt({ token, user }: { token: JWT; user?: User }) {
+      if (user) {
+        token.userId = user.userId;
+        token.role = user.role;
+        token.accessToken = user.accessToken;
+      }
+      return token;
+    },
+    async session({ session, token }: { session: Session; token: JWT }) {
+      if (token) {
+        session.user.userId = token.userId;
+        session.user.role = token.role;
+        session.accessToken = token.accessToken;
+      }
+      return session;
+    },
+  },
 };
 
 export const { handlers, signIn, signOut, auth } = NextAuth(authConfig);
