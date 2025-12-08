@@ -2,8 +2,6 @@
 // import { logout } from "@/actions/logout"
 // import { signOut } from "@/auth"
 
-import { redirect } from "next/navigation";
-
 import { env } from "@/lib/env";
 
 import { getClientHeader } from "./get-headers";
@@ -140,9 +138,6 @@ function handleResponse(response: Response) {
       // const error = (data && data.message) || response.statusText
       // return Promise.reject(error)
       const error = data ?? response.statusText;
-      if (error.message == "Given jwt token is expired !!") {
-        redirect("/auth/session-expired");
-      }
       if (typeof error === "object" && error !== null) {
         throw new Error(JSON.stringify(error));
       }

@@ -1,9 +1,10 @@
 "use client";
 
-import { categories } from "@/actions/categories";
+import { getCategories } from "@/actions/categories";
+import { logout } from "@/actions/logout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ShoppingCart, UserCircle } from "lucide-react";
+import { LogOut, Search, ShoppingCart, UserCircle } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -14,7 +15,7 @@ export default function Header() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await categories();
+        const res = await getCategories();
         console.log("Feteched categories ", res);
         setCategoriesList(res?.data ?? []);
       } catch (error) {
@@ -67,6 +68,13 @@ export default function Header() {
                 <Link href="/profile" className="flex items-center gap-1">
                   <UserCircle className="h-7 w-7 mt-2" />
                 </Link>
+              </li>
+              <li>
+                <form action={logout}>
+                  <button type="submit" className="flex items-center gap-1">
+                    <LogOut className="h-7 w-7 mt-2" />
+                  </button>
+                </form>
               </li>
             </ul>
           </nav>

@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { fetchWrapper } from "@/lib/fetch";
 
-export const categories = async () => {
+export const getCategories = async () => {
   const session = await auth();
   try {
     return await fetchWrapper.get({

@@ -19,7 +19,7 @@ import { LoginFormSchema } from "@/schemas/login-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { SiGoogle } from "react-icons/si";
@@ -46,12 +46,7 @@ const LoginForm = () => {
     setError("");
     startLoginTransition(() => {
       login(values, callbackUrl)
-        .then((data) => {
-          if (data?.error) {
-            form.reset();
-            setError(data?.error?.toString() || undefined);
-          }
-        })
+        .then(redirect(callbackUrl ?? "/home"))
         .catch(() => setError("Something went wrong"));
     });
   }
@@ -64,7 +59,7 @@ const LoginForm = () => {
   }
 
   useEffect(() => {
-    if (searchParams.get("authcode")) return;
+    if (!searchParams.get("authcode")) return;
     startGoogleTransition(() => {
       googleLogin(searchParams.get("authcode"), callbackUrl);
     });
@@ -151,6 +146,14 @@ const LoginForm = () => {
                 className="text-blue-600 hover:underline ml-1"
               >
                 Signup
+              </Link>
+            </h1>
+            <h1>
+              <Link
+                href="/auth/login/forgot-password"
+                className="text-blue-600 hover:underline ml-1"
+              >
+                Forgot Password?
               </Link>
             </h1>
           </form>

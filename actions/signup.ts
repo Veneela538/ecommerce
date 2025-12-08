@@ -1,9 +1,7 @@
 "use server";
 
-import { currentSession } from "@/lib/auth";
 import { fetchWrapper } from "@/lib/fetch";
 import { SignupFormSchema } from "@/schemas/signup-form";
-import { redirect } from "next/navigation";
 import * as z from "zod";
 
 export const signup = async (
@@ -12,19 +10,30 @@ export const signup = async (
 ) => {
   const validatedFields = SignupFormSchema.safeParse(values);
 
+  const { addressLane1, addressLane2, addressLane3, addressLane4, ...rest } =
+    values;
+
   if (!validatedFields.success) {
     return { status: false, message: "Invalid fields!" };
   }
 
-  const session = await currentSession();
+  const address = [addressLane1, addressLane2, addressLane3, addressLane4]
+    .filter(Boolean)
+    .join(", ");
+
+  const payload = {
+    ...rest,
+    address,
+  };
+
   try {
     const response = await fetchWrapper.post({
       url: `/auth/signup`,
-      body: values,
+      body: payload,
     });
-    if (response.status) {
-      redirect("/auth/login");
-    }
+    // if (response.status) {
+    //   redirect("/auth/login");
+    // }
     return response;
   } catch (error) {
     throw error;

@@ -19,12 +19,14 @@ export default auth((req) => {
     return null;
   }
 
-  if (!isLoggedIn && !isPublicRoute && nextUrl.pathname != "/auth/signup") {
+  if (!isLoggedIn && !isPublicRoute && !isAuthRoute) {
     let callbackUrl = nextUrl.pathname;
     if (nextUrl.search) {
       callbackUrl += nextUrl.search;
     }
-    return Response.redirect(new URL(`/auth/login`, nextUrl));
+    const loginUrl = new URL(`/auth/login`, nextUrl);
+    loginUrl.searchParams.set("callbackUrl", callbackUrl);
+    return Response.redirect(loginUrl);
   }
 
   if (isLoggedIn) {

@@ -7,13 +7,19 @@
       "header": "Login",
       "username": "Username",
       "password": "Password",
-      "buttonLabel": "Login"
+      "buttonLabel": "Login",
+      "updateCredentials": {
+        "username": "Username",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "header": "Update Credentials"
+      },
+      "accountCreated": {
+        "username": "Username"
+      }
     },
     "signup": {
       "header": "Signup",
-      "username": "Username",
-      "password": "Password",
-      "confirmPassword": "Confirm Password",
       "title": "Title",
       "firstName": "First Name",
       "lastName": "Lastname",
@@ -24,8 +30,7 @@
       "addressLane3": "Address Lane3",
       "addressLane4": "Address Lane4",
       "pincode": "Pincode",
-      "buttonLabel1": "Next",
-      "buttonLabel2": "Signup"
+      "buttonLabel": "Signup"
     }
   }
 }

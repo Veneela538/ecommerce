@@ -1,19 +1,17 @@
 "use server";
-
 import { auth } from "@/auth";
 import { fetchWrapper } from "@/lib/fetch";
 
-export const getCategoryProducts = async (category: string) => {
+const getProduct = async (pid: number) => {
   const session = await auth();
   try {
-    const response = await fetchWrapper.get({
-      url: `/public/category/${category}`,
+    return await fetchWrapper.get({
+      url: `/public/product/${pid}`,
       accessToken: session?.accessToken,
     });
-    return response;
   } catch (error) {
     throw error;
   }
 };
 
-export default getCategoryProducts;
+export default getProduct;

@@ -3,11 +3,11 @@
 import { auth } from "@/auth";
 import { fetchWrapper } from "@/lib/fetch";
 
-export const getCategoryProducts = async (category: string) => {
+export const verifyEmail = async (email: string) => {
   const session = await auth();
   try {
     const response = await fetchWrapper.get({
-      url: `/public/category/${category}`,
+      url: `/auth/account-recovery/${email}`,
       accessToken: session?.accessToken,
     });
     return response;
@@ -16,4 +16,4 @@ export const getCategoryProducts = async (category: string) => {
   }
 };
 
-export default getCategoryProducts;
+export default verifyEmail;

@@ -3,17 +3,14 @@
 import { auth } from "@/auth";
 import { fetchWrapper } from "@/lib/fetch";
 
-export const getCategoryProducts = async (category: string) => {
+export const getCartProducts = async () => {
   const session = await auth();
   try {
-    const response = await fetchWrapper.get({
-      url: `/public/category/${category}`,
+    return await fetchWrapper.get({
+      url: `/user/cart`,
       accessToken: session?.accessToken,
     });
-    return response;
   } catch (error) {
     throw error;
   }
 };
-
-export default getCategoryProducts;
