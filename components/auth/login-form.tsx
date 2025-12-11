@@ -63,7 +63,7 @@ const LoginForm = () => {
     startGoogleTransition(() => {
       googleLogin(searchParams.get("authcode"), callbackUrl);
     });
-  }, [searchParams]);
+  }, [callbackUrl, searchParams]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

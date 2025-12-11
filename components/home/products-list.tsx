@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ICategoryProduct } from "@/types";
-import { Item } from "./Item";
+import { Item } from "./item";
 
 type DisplayProductsListType = {
   category: string;

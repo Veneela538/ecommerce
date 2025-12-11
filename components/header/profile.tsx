@@ -1,23 +1,12 @@
 "use client";
-import { signup } from "@/actions/signup";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { getUserDetails } from "@/actions/get-user-details";
 import { title } from "@/config/lov";
 import { useDictionary } from "@/context/dictionary-context";
-import { env } from "@/lib/env";
-import { SignupFormSchema } from "@/schemas/signup-form";
+import { ProfileFormSchema } from "@/schemas/profile-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle } from "lucide-react";
-import Link from "next/link";
-import { redirect, useSearchParams } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { SiGoogle } from "react-icons/si";
 import z from "zod";
 import { FormError } from "../form-error";
 import { Heading } from "../heading";
@@ -32,18 +21,25 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
-const SignupForm = () => {
+const Profile = () => {
   const dict = useDictionary();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl");
-
-  const [error, setError] = useState<string | undefined>("");
+  const [error, setError] = useState<string | undefined>();
   const [isPending, startTransition] = useTransition();
-  const [isGooglePending, startGoogleTransition] = useTransition();
+  const [isCancelling, setIsCancelling] = useTransition();
+  const [isEditing, setIsEditing] = useState(false);
+  const [originalValues, setOriginalValues] =
+    useState<z.infer<typeof ProfileFormSchema>>();
 
-  const signupForm = useForm<z.infer<typeof SignupFormSchema>>({
-    resolver: zodResolver(SignupFormSchema),
+  const profileForm = useForm<z.infer<typeof ProfileFormSchema>>({
+    resolver: zodResolver(ProfileFormSchema),
     defaultValues: {
       title: "",
       firstName: "",
@@ -57,50 +53,58 @@ const SignupForm = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof SignupFormSchema>) {
-    setError("");
+  useEffect(() => {
+    const userDetails = async () => {
+      try {
+        const { data } = await getUserDetails();
+        setOriginalValues(data);
 
-    startTransition(() => {
-      signup(values, callbackUrl).catch(() => setError("Something went wrong"));
-      redirect("/auth/login/account-created");
-    });
-  }
-
-  function googleSignup() {
-    setError("");
-    startGoogleTransition(() => {
-      window.location.href = `${env.NEXT_PUBLIC_BACKEND_APP_URL}/oauth2/authorization/google`;
-    });
-  }
-
+        profileForm.reset({
+          title: data.title || "",
+          firstName: data.firstName || "",
+          lastName: data.lastName || "",
+          phoneNumber: data.phoneNumber || "",
+          email: data.email || "",
+          addressLine1: data.addressLine1 || "",
+          addressLine2: data.addressLine2 || "",
+          addressLine3: data.addressLine3 || "",
+          pincode: data.pincode || "",
+        });
+      } catch (error) {
+        setError(dict.common.somethingWentWrong);
+        console.error("Error getting user details:", error);
+      }
+    };
+    userDetails();
+  }, [profileForm]);
   return (
     <div className="w-full flex items-center justify-center">
       <div className="flex min-h-screen items-center">
-        <Card>
+        <Card className="w-3/4">
           <CardHeader>
             <CardTitle>
               <Heading variant={"h2"} className="text-center sm:text-center">
-                {dict.auth.signup.header}
+                {dict.profile.header}
               </Heading>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Form {...signupForm}>
+            <Form {...profileForm}>
               <form
-                onSubmit={signupForm.handleSubmit(onSubmit)}
+                // onSubmit={profileForm.handleSubmit(onSubmit)}
                 className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-secondary"
-                id="signupForm"
+                id="profileForm"
               >
                 <div className="flex flex-col gap-4">
                   <FormField
-                    control={signupForm.control}
+                    control={profileForm.control}
                     name="title"
                     render={({ field }) => (
                       <FormItem className="w-20">
-                        <FormLabel>{dict.auth.signup.title}</FormLabel>
+                        <FormLabel>{dict.profile.title}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value || ""}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -120,15 +124,15 @@ const SignupForm = () => {
                     )}
                   />
                   <FormField
-                    control={signupForm.control}
+                    control={profileForm.control}
                     name="firstName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.auth.signup.firstName}</FormLabel>
+                        <FormLabel>{dict.profile.firstName}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            disabled={isPending}
+                            disabled={isPending || !isEditing}
                             placeholder="Enter first name"
                             type="firstName"
                           />
@@ -138,15 +142,15 @@ const SignupForm = () => {
                     )}
                   />
                   <FormField
-                    control={signupForm.control}
+                    control={profileForm.control}
                     name="lastName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.auth.signup.lastName}</FormLabel>
+                        <FormLabel>{dict.profile.lastName}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            disabled={isPending}
+                            disabled={isPending || !isEditing}
                             placeholder="Enter last name"
                             type="lastName"
                           />
@@ -157,11 +161,11 @@ const SignupForm = () => {
                   />
                   {/* </div> */}
                   <FormField
-                    control={signupForm.control}
+                    control={profileForm.control}
                     name="phoneNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.auth.signup.phoneNumber}</FormLabel>
+                        <FormLabel>{dict.profile.phoneNumber}</FormLabel>
                         <div className="flex space-x-2">
                           <Input
                             type="text"
@@ -172,7 +176,7 @@ const SignupForm = () => {
                           <FormControl>
                             <Input
                               {...field}
-                              disabled={isPending}
+                              disabled={isPending || !isEditing}
                               placeholder="xxxxxxxxxx"
                               type="phoneNumber"
                             />
@@ -183,15 +187,15 @@ const SignupForm = () => {
                     )}
                   />
                   <FormField
-                    control={signupForm.control}
+                    control={profileForm.control}
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.auth.signup.email}</FormLabel>
+                        <FormLabel>{dict.profile.email}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            disabled={isPending}
+                            disabled={true}
                             placeholder="Enter email address"
                             type="email"
                           />
@@ -203,15 +207,15 @@ const SignupForm = () => {
                 </div>
                 <div className="flex flex-col gap-4">
                   <FormField
-                    control={signupForm.control}
+                    control={profileForm.control}
                     name="addressLine1"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.auth.signup.addressLine1}</FormLabel>
+                        <FormLabel>{dict.profile.addressLine1}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            disabled={isPending}
+                            disabled={isPending || !isEditing}
                             placeholder="Enter address details"
                             type="address"
                           />
@@ -221,15 +225,15 @@ const SignupForm = () => {
                     )}
                   />
                   <FormField
-                    control={signupForm.control}
+                    control={profileForm.control}
                     name="addressLine2"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.auth.signup.addressLine2}</FormLabel>
+                        <FormLabel>{dict.profile.addressLine2}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            disabled={isPending}
+                            disabled={isPending || !isEditing}
                             placeholder="Enter address details"
                             type="address"
                           />
@@ -239,15 +243,15 @@ const SignupForm = () => {
                     )}
                   />
                   <FormField
-                    control={signupForm.control}
+                    control={profileForm.control}
                     name="addressLine3"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.auth.signup.addressLine3}</FormLabel>
+                        <FormLabel>{dict.profile.addressLine3}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            disabled={isPending}
+                            disabled={isPending || !isEditing}
                             placeholder="Enter address details"
                             type="address"
                           />
@@ -257,15 +261,15 @@ const SignupForm = () => {
                     )}
                   />
                   <FormField
-                    control={signupForm.control}
+                    control={profileForm.control}
                     name="pincode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.auth.signup.pincode}</FormLabel>
+                        <FormLabel>{dict.profile.pincode}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            disabled={isPending}
+                            disabled={isPending || !isEditing}
                             placeholder="Enter pincode"
                             type="pincode"
                           />
@@ -283,44 +287,41 @@ const SignupForm = () => {
                     <FormError message={error} />
                   </div>
                 )}
-                <div className="flex flex-row justify-between w-full px-">
+                <div className="flex flex-row justify-between w-full">
                   {/* <div> */}
-                  <Button
-                    disabled={isGooglePending || isPending}
-                    onClick={googleSignup}
-                  >
-                    {isGooglePending ? (
-                      <>
-                        <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                        {dict.common.pleaseWait}
-                      </>
-                    ) : (
-                      <>
-                        <SiGoogle className="w-5 h-5" />
-                        Continue with Google
-                      </>
-                    )}
-                  </Button>
-                  <Button disabled={isPending} type="submit" form="signupForm">
-                    {isPending ? (
-                      <>
-                        <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                        {dict.common.pleaseWait}
-                      </>
-                    ) : (
-                      <>{dict.auth.signup.buttonLabel}</>
-                    )}
-                  </Button>
+                  {!isEditing ? (
+                    <Button onClick={() => setIsEditing(true)}>
+                      {dict.profile.buttonLabel3}
+                    </Button>
+                  ) : (
+                    <div className="justify-between">
+                      <Button
+                        disabled={isPending}
+                        type="submit"
+                        form="profileForm"
+                      >
+                        {isPending ? (
+                          <>
+                            <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                            {dict.common.pleaseWait}
+                          </>
+                        ) : (
+                          <>{dict.profile.buttonLabel1}</>
+                        )}
+                      </Button>
+                      <Button disabled={isCancelling || isPending}>
+                        {isCancelling ? (
+                          <>
+                            <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                            {dict.common.pleaseWait}
+                          </>
+                        ) : (
+                          <>{dict.profile.buttonLabel2}</>
+                        )}
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <div className="flex justify-center my-4">
-                Already have an account?
-                <Link
-                  href="/auth/login"
-                  className="text-blue-600 hover:underline ml-1"
-                >
-                  Login
-                </Link>
               </div>
             </Form>
           </CardContent>
@@ -330,4 +331,4 @@ const SignupForm = () => {
   );
 };
 
-export default SignupForm;
+export default Profile;

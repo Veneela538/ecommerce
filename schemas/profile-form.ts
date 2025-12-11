@@ -1,21 +1,6 @@
-import { z } from "zod";
+import z from "zod";
 
-export const CredentialsFormSchema = z.object({
-  username: z
-    .string()
-    .min(3, { message: "Username must be at least 3 characters long" })
-    .max(100, { message: "Username must be at most 20 characters long" }),
-
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters long" }),
-
-  confirmPassword: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters long" }),
-});
-
-export const SignupFormSchema = z.object({
+export const ProfileFormSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   firstName: z
     .string()
@@ -43,5 +28,3 @@ export const SignupFormSchema = z.object({
     .string()
     .regex(/^\d{6}$/, { message: "Pincode must be exactly 6 digits" }),
 });
-
-export type UserSchemaType = z.infer<typeof SignupFormSchema>;

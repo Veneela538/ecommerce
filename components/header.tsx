@@ -1,15 +1,18 @@
 "use client";
 
 import { getCategories } from "@/actions/categories";
-import { logout } from "@/actions/logout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { LogOut, Search, ShoppingCart, UserCircle } from "lucide-react";
+
+import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import MyAccount from "./header/myaccount";
+import SearchBar from "./header/search-bar";
 
-export default function Header() {
-  const [searchTerm, setSearchTerm] = useState("");
+type HeaderType = {
+  isAuthenticated: boolean;
+};
+
+export default function Header({ isAuthenticated }: HeaderType) {
   const [categoriesList, setCategoriesList] = useState<string[]>([]);
 
   useEffect(() => {
@@ -25,13 +28,8 @@ export default function Header() {
     fetchData();
   }, []);
 
-  const handleSearch = () => {
-    // 🔍 You can route to a search page or filter products
-    console.log("Searching for:", searchTerm);
-  };
-
   return (
-    <>
+    <main>
       <header className="bg-gray-800 text-white p-4">
         <div className="container mx-auto flex justify-between items-center gap-6">
           {/* Logo / App Name */}
@@ -41,41 +39,23 @@ export default function Header() {
           <nav>
             <ul className="flex gap-6">
               <li>
-                {/* Search bar */}
-                <div className="flex items-center gap-2 bg-white rounded-lg px-2 py-1">
-                  <Input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-48 text-black border-0 focus:ring-0"
-                  />
-                  <Button
-                    size="sm"
-                    onClick={handleSearch}
-                    className="bg-[#232f3e] hover:bg-[#1a2430]"
-                  >
-                    <Search className="h-4 w-4" />
-                  </Button>
-                </div>
+                <SearchBar />
               </li>
               <li>
-                <Link href="/cart" className="flex items-center gap-1">
+                <Link
+                  href="/cart"
+                  className="flex items-center gap-1 hover:text-gray-300"
+                >
                   <ShoppingCart className="h-7 w-7 mt-2" />
                 </Link>
               </li>
-              <li>
-                <Link href="/profile" className="flex items-center gap-1">
-                  <UserCircle className="h-7 w-7 mt-2" />
-                </Link>
-              </li>
-              <li>
-                <form action={logout}>
-                  <button type="submit" className="flex items-center gap-1">
-                    <LogOut className="h-7 w-7 mt-2" />
-                  </button>
-                </form>
-              </li>
+              {isAuthenticated && (
+                <>
+                  <li>
+                    <MyAccount />
+                  </li>
+                </>
+              )}
             </ul>
           </nav>
         </div>
@@ -94,6 +74,6 @@ export default function Header() {
           ))}
         </ul>
       </nav>
-    </>
+    </main>
   );
 }

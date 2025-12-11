@@ -1,6 +1,7 @@
 {
   "common": {
-    "pleaseWait": "Please Wait"
+    "pleaseWait": "Please Wait",
+    "somethingWentWrong": "Something went wrong"
   },
   "auth": {
     "login": {
@@ -25,12 +26,26 @@
       "lastName": "Lastname",
       "phoneNumber": "Phone Number",
       "email": "Email",
-      "addressLane1": "Address Lane1",
-      "addressLane2": "Address Lane2",
-      "addressLane3": "Address Lane3",
-      "addressLane4": "Address Lane4",
+      "addressLine1": "Address Line1",
+      "addressLine2": "Address Line2",
+      "addressLine3": "Address Line3",
       "pincode": "Pincode",
       "buttonLabel": "Signup"
     }
+  },
+  "profile": {
+    "header": "Edit Profile",
+    "title": "Title",
+    "firstName": "First Name",
+    "lastName": "Lastname",
+    "phoneNumber": "Phone Number",
+    "email": "Email",
+    "addressLine1": "Address Line1",
+    "addressLine2": "Address Line2",
+    "addressLine3": "Address Line3",
+    "pincode": "Pincode",
+    "buttonLabel1": "Save",
+    "buttonLabel2": "Cancel",
+    "buttonLabel3": "Edit"
   }
 }

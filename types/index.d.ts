@@ -33,6 +33,7 @@ export interface IProduct {
   totalReviews: number;
   createdAt: Date;
   updatedAt: Date;
+  stockQuantity: number;
   productVariants: IVariant[];
 }
 
@@ -45,7 +46,6 @@ export interface ICategoryProduct {
 }
 
 export interface ICartProduct {
-  productId: number;
   variantId: number;
   quantity: number;
   name: string;

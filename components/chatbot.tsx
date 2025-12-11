@@ -32,7 +32,7 @@ export default function Chatbot() {
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: "Error contacting server." },
+        { sender: "bot", text: "Error contacting server. " + err },
       ]);
     }
   };
