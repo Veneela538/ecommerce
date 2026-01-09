@@ -23,6 +23,7 @@ export const updateCredentials = async (
         password: password,
         token: token,
       },
+      accessToken: undefined,
     });
   } catch (error) {
     throw error;

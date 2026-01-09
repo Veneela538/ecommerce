@@ -1,6 +1,6 @@
 "use client";
 
-import { getCategories } from "@/actions/categories";
+import { getCategories } from "@/actions/categories/categories";
 
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
@@ -33,8 +33,9 @@ export default function Header({ isAuthenticated }: HeaderType) {
       <header className="bg-gray-800 text-white p-4">
         <div className="container mx-auto flex justify-between items-center gap-6">
           {/* Logo / App Name */}
-          <h1 className="text-xl font-bold">My E-Commerce App</h1>
-
+          <Link href={"/home"}>
+            <h1 className="text-xl font-bold">My E-Commerce App</h1>
+          </Link>
           {/* Navigation */}
           <nav>
             <ul className="flex gap-6">

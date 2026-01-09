@@ -1,5 +1,5 @@
 "use client";
-import { signup } from "@/actions/signup";
+import { signup } from "@/actions/auth/signup";
 import {
   Select,
   SelectContent,
@@ -14,12 +14,13 @@ import { SignupFormSchema } from "@/schemas/signup-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
-import { redirect, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { SiGoogle } from "react-icons/si";
 import z from "zod";
 import { FormError } from "../form-error";
+import { FormInfo } from "../form-info";
 import { Heading } from "../heading";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -38,9 +39,10 @@ const SignupForm = () => {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
 
-  const [error, setError] = useState<string | undefined>("");
+  const [error, setError] = useState<string>("");
   const [isPending, startTransition] = useTransition();
   const [isGooglePending, startGoogleTransition] = useTransition();
+  const [emailStatus, setEmailStatus] = useState<boolean>(false);
 
   const signupForm = useForm<z.infer<typeof SignupFormSchema>>({
     resolver: zodResolver(SignupFormSchema),
@@ -50,19 +52,21 @@ const SignupForm = () => {
       lastName: "",
       phoneNumber: "",
       email: "",
-      addressLine1: "",
-      addressLine2: "",
-      addressLine3: "",
-      pincode: "",
     },
   });
 
   function onSubmit(values: z.infer<typeof SignupFormSchema>) {
     setError("");
+    setEmailStatus(false);
 
     startTransition(() => {
-      signup(values, callbackUrl).catch(() => setError("Something went wrong"));
-      redirect("/auth/login/account-created");
+      signup(values, callbackUrl)
+        .then((res) => {
+          if (res.status === true) {
+            setEmailStatus(true);
+          }
+        })
+        .catch(() => setError("Something went wrong"));
     });
   }
 
@@ -88,7 +92,7 @@ const SignupForm = () => {
             <Form {...signupForm}>
               <form
                 onSubmit={signupForm.handleSubmit(onSubmit)}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-secondary"
+                className="grid grid-cols-1 gap-4 border-secondary"
                 id="signupForm"
               >
                 <div className="flex flex-col gap-4">
@@ -201,80 +205,10 @@ const SignupForm = () => {
                     )}
                   />
                 </div>
-                <div className="flex flex-col gap-4">
-                  <FormField
-                    control={signupForm.control}
-                    name="addressLine1"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{dict.auth.signup.addressLine1}</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            disabled={isPending}
-                            placeholder="Enter address details"
-                            type="address"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={signupForm.control}
-                    name="addressLine2"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{dict.auth.signup.addressLine2}</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            disabled={isPending}
-                            placeholder="Enter address details"
-                            type="address"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={signupForm.control}
-                    name="addressLine3"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{dict.auth.signup.addressLine3}</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            disabled={isPending}
-                            placeholder="Enter address details"
-                            type="address"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={signupForm.control}
-                    name="pincode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{dict.auth.signup.pincode}</FormLabel>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            disabled={isPending}
-                            placeholder="Enter pincode"
-                            type="pincode"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                {/* <div className="flex flex-col gap-4">
+                  
+                  
+                </div> */}
               </form>
               <div className="mt-8 flex flex-col items-center gap-4">
                 {/* Error message centered */}
@@ -283,11 +217,32 @@ const SignupForm = () => {
                     <FormError message={error} />
                   </div>
                 )}
-                <div className="flex flex-row justify-between w-full px-">
+                {emailStatus && (
+                  <div className="w-full flex justify-center">
+                    <FormInfo message={dict.auth.signup.emailSent} />
+                  </div>
+                )}
+                <div className="flex flex-col justify-between gap-4 w-full">
                   {/* <div> */}
+                  <Button
+                    disabled={isPending}
+                    type="submit"
+                    form="signupForm"
+                    className="bg-gray-900"
+                  >
+                    {isPending ? (
+                      <>
+                        <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                        {dict.common.pleaseWait}
+                      </>
+                    ) : (
+                      <>{dict.auth.signup.buttonLabel}</>
+                    )}
+                  </Button>
                   <Button
                     disabled={isGooglePending || isPending}
                     onClick={googleSignup}
+                    variant={"outline"}
                   >
                     {isGooglePending ? (
                       <>
@@ -299,16 +254,6 @@ const SignupForm = () => {
                         <SiGoogle className="w-5 h-5" />
                         Continue with Google
                       </>
-                    )}
-                  </Button>
-                  <Button disabled={isPending} type="submit" form="signupForm">
-                    {isPending ? (
-                      <>
-                        <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                        {dict.common.pleaseWait}
-                      </>
-                    ) : (
-                      <>{dict.auth.signup.buttonLabel}</>
                     )}
                   </Button>
                 </div>

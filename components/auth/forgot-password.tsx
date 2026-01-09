@@ -1,5 +1,5 @@
 "use client";
-import verifyEmail from "@/actions/verify-email";
+import verifyEmail from "@/actions/auth/verify-email";
 import { FormError } from "@/components/form-error";
 import { Button } from "@/components/ui/button";
 import {

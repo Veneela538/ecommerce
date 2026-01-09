@@ -1,4 +1,4 @@
-import { getCategories } from "@/actions/categories";
+import { getCategories } from "@/actions/categories/categories";
 import Chatbot from "@/components/chatbot";
 import { ProductsList } from "@/components/home/products-list";
 

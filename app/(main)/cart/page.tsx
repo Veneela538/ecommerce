@@ -1,9 +1,14 @@
-import { getCartProducts } from "@/actions/get_cart_products";
+import { getCartProducts } from "@/actions/cart/get_cart_products";
 import CartItem from "@/components/cart/cart-item";
+import OrderSummary from "@/components/cart/order-summary";
+import SaveForLater from "@/components/cart/save-for-later";
 import { ICartProduct } from "@/types";
 
 const Cart = async () => {
   const { data } = await getCartProducts();
+  const CartItems = data.listOfCartItems.filter(
+    (item: ICartProduct) => item.saveForLater === false
+  );
 
   return (
     <main className="bg-gray-100 p-10">
@@ -11,7 +16,7 @@ const Cart = async () => {
         Cart Products
       </h1>
       <div className="flex flex-col gap-8 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        {data.map((product: ICartProduct) => {
+        {CartItems.map((product: ICartProduct) => {
           return (
             <div
               className="
@@ -26,6 +31,19 @@ const Cart = async () => {
             </div>
           );
         })}
+
+        {/* Order Summary */}
+        {CartItems.length > 0 && (
+          <OrderSummary
+            subtotal={data.subTotal}
+            discount={data.discountedPrice}
+            tax={data.tax}
+            delivery={data.shippingCharge}
+            totalAmount={data.totalAmount}
+          />
+        )}
+
+        <SaveForLater items={data.listOfCartItems} />
       </div>
     </main>
   );

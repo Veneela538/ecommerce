@@ -1,7 +1,18 @@
 "use client";
-import { logout } from "@/actions/logout";
+import { logout } from "@/actions/auth/logout";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Bell, Heart, LogOut, Package, User, UserCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,45 +22,69 @@ import {
 } from "../ui/dropdown-menu";
 
 const MyAccount = () => {
-  const router = useRouter();
-  const handleLogout = () => {
-    // 🔍 You can route to a search page or filter products
-    logout().then(() => router.push("/auth/login"));
-  };
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className="focus:outline-none">
-        <UserCircle className="h-7 w-7 mt-2 cursor-pointer hover:text-gray-300" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-36 p-2">
-        <DropdownMenuItem onClick={() => window.location.assign("/profile")}>
-          <User />
-          <span>Profile</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => window.location.assign("/orders")}>
-          <Package />
-          <span>Orders</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => window.location.assign("/wishlist")}>
-          <Heart />
-          <span>Wishlist</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => window.location.assign("/notifications")}
-        >
-          <Bell />
-          <span>Notifications</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>
-          <LogOut className="h-7 w-7 mt-2" />
-          Logout
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <AlertDialog>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="focus:outline-none">
+            <UserCircle className="h-7 w-7 mt-2 cursor-pointer hover:text-gray-300" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-36 p-2">
+            <DropdownMenuItem asChild>
+              <Link href="/profile">
+                <User />
+                <span>Profile</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/orders">
+                <Package />
+                <span>Orders</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/wishlist">
+                <Heart />
+                <span>Wishlist</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/notifications">
+                <Bell />
+                <span>Notifications</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <AlertDialogTrigger asChild>
+              <DropdownMenuItem>
+                <LogOut className="h-5 w-5" />
+                <span>Logout</span>
+              </DropdownMenuItem>
+            </AlertDialogTrigger>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to logout?
+            </AlertDialogTitle>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <form action={logout}>
+              <AlertDialogAction asChild>
+                <Button type="submit">Yes, Logout</Button>
+              </AlertDialogAction>
+            </form>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 

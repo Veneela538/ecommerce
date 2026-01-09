@@ -1,6 +1,6 @@
 "use client";
 
-import { searchProducts } from "@/actions/search_products";
+import { searchProducts } from "@/actions/products/search_products";
 import { Button } from "@/components/ui/button";
 import {
   Command,

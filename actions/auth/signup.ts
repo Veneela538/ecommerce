@@ -18,6 +18,7 @@ export const signup = async (
     const response = await fetchWrapper.post({
       url: `/auth/signup`,
       body: values,
+      accessToken: undefined,
     });
     // if (response.status) {
     //   redirect("/auth/login");

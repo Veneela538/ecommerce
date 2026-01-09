@@ -32,16 +32,6 @@ export const SignupFormSchema = z.object({
     .regex(/^\d{10}$/, { message: "Phone number must be exactly 10 digits" }),
 
   email: z.string().email({ message: "Invalid email address" }),
-
-  addressLine1: z.string().min(1, { message: "Address is required" }),
-
-  addressLine2: z.string().min(1, { message: "Address is required" }),
-
-  addressLine3: z.string().optional(),
-
-  pincode: z
-    .string()
-    .regex(/^\d{6}$/, { message: "Pincode must be exactly 6 digits" }),
 });
 
 export type UserSchemaType = z.infer<typeof SignupFormSchema>;

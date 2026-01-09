@@ -1,8 +1,6 @@
 import { auth } from "@/auth";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import DictionaryProvider from "@/context/dictionary-context";
-import { getDictionary } from "@/lib/dictionaries";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
@@ -18,17 +16,14 @@ export default async function MainLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
-  const dictionary = await getDictionary("en");
   return (
     <SessionProvider
       // refetchInterval={1}
       session={session}
     >
-      <DictionaryProvider dictionary={dictionary}>
-        <Header isAuthenticated={session?.user?.userId != null} />
-        <main className="min-h-screen flex-grow">{children}</main>
-        <Footer />
-      </DictionaryProvider>
+      <Header isAuthenticated={session?.user?.userId != null} />
+      <main className="min-h-screen flex-grow">{children}</main>
+      <Footer />
     </SessionProvider>
   );
 }

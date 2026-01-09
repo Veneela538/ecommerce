@@ -1,6 +1,6 @@
 "use client";
-import { login } from "@/actions/login";
-import { updateCredentials } from "@/actions/update-credentials";
+import { login } from "@/actions/auth/login";
+import { updateCredentials } from "@/actions/auth/update-credentials";
 import { CardWrapper } from "@/components/auth/card-wrapper";
 import { FormError } from "@/components/form-error";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useDictionary } from "@/context/dictionary-context";
 import { UpdateCredentialsSchema } from "@/schemas/update-credentials";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -32,6 +32,7 @@ const UpdateCredentials = () => {
   const callbackUrl = searchParams.get("callbackUrl");
   const [error, setError] = useState<string | undefined>("");
   const [isSubmitPending, startSubmitTransition] = useTransition();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof UpdateCredentialsSchema>>({
     resolver: zodResolver(UpdateCredentialsSchema),
@@ -56,10 +57,10 @@ const UpdateCredentials = () => {
             username: values.username,
             password: values.password,
           };
-          const callbackUrl = "/home";
-          login(loginData, callbackUrl).catch(() => {
+          login(loginData).catch(() => {
             setError("Something went wrong");
           });
+          router.push("/home");
         })
         .catch(() => {
           setError("Something went wrong");

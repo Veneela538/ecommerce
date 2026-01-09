@@ -1,7 +1,6 @@
 "use client";
 
-import { googleLogin, login } from "@/actions/login";
-import { CardWrapper } from "@/components/auth/card-wrapper";
+import { googleLogin, login } from "@/actions/auth/login";
 import { FormError } from "@/components/form-error";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,13 +18,14 @@ import { LoginFormSchema } from "@/schemas/login-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
-import { redirect, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { SiGoogle } from "react-icons/si";
 import { z } from "zod";
+import { CardWrapper } from "./card-wrapper";
 
-const LoginForm = () => {
+const LoginForm = ({ inDialog = false }) => {
   const dict = useDictionary();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
@@ -46,7 +46,9 @@ const LoginForm = () => {
     setError("");
     startLoginTransition(() => {
       login(values, callbackUrl)
-        .then(redirect(callbackUrl ?? "/home"))
+        .then(() => {
+          window.location.assign(callbackUrl ?? "/home");
+        })
         .catch(() => setError("Something went wrong"));
     });
   }
@@ -66,7 +68,12 @@ const LoginForm = () => {
   }, [callbackUrl, searchParams]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div
+      className={
+        inDialog ? "w-full" : "flex min-h-screen items-center justify-center"
+      }
+    >
+      {/* //<div className="w-full"> */}
       <CardWrapper headerLabel={dict.auth.login.header}>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

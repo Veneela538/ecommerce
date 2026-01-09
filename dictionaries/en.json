@@ -1,7 +1,9 @@
 {
   "common": {
     "pleaseWait": "Please Wait",
-    "somethingWentWrong": "Something went wrong"
+    "somethingWentWrong": "Something went wrong",
+    "pageLoadError": "We couldn’t load this page. Please retry or try again later.",
+    "tryAgain": "Try Again"
   },
   "auth": {
     "login": {
@@ -30,7 +32,8 @@
       "addressLine2": "Address Line2",
       "addressLine3": "Address Line3",
       "pincode": "Pincode",
-      "buttonLabel": "Signup"
+      "buttonLabel": "Signup",
+      "emailSent": "Email successfully sent please check your mail inbox"
     }
   },
   "profile": {
@@ -47,5 +50,38 @@
     "buttonLabel1": "Save",
     "buttonLabel2": "Cancel",
     "buttonLabel3": "Edit"
+  },
+  "notFound": {
+    "title": "404 | Not Found",
+    "subTitle": "Sorry. the page you are looking for could not be found.",
+    "action": "Go Home"
+  },
+  "checkout": {
+    "paymentMethod": "Payment Method",
+    "shippingAddress": "Shipping Address",
+    "billingAddress": "Billing Address"
+  },
+  "address": {
+    "country": "Country",
+    "name": "Name",
+    "phoneNumber": "Phone Number",
+    "pincode": "Pincode",
+    "addressLine1": "Address Line1",
+    "addressLine2": "Address Line2",
+    "addressLine3": "Address Line3",
+    "city": "City",
+    "state": "State"
+  },
+  "crud": {
+    "success": {
+      "create": "Record created successfully",
+      "update": "Record updated successfully",
+      "delete": "Record deleted successfully"
+    },
+    "error": {
+      "create": "Error creating record",
+      "update": "Error updating record",
+      "delete": "Error deleting record"
+    }
   }
 }

@@ -22,7 +22,7 @@ type FetchWithoutBodyType = {
 
 type FetchWithBodyType = {
   url: string;
-  accessToken?: string | undefined;
+  accessToken: string | undefined;
   body: object;
   options?: object;
 };

@@ -1,6 +1,6 @@
 "use server";
 
-import getCategoryProducts from "@/actions/category-products";
+import getCategoryProducts from "@/actions/categories/category-products";
 import {
   Carousel,
   CarouselContent,

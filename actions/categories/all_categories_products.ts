@@ -1,7 +1,7 @@
 "use server";
 
 import { IProduct } from "@/types";
-import { getCategories } from "./categories";
+import { getCategories } from "./categories/categories";
 import getCategoryProducts from "./category-products";
 
 export interface AllCategoriesProducts {

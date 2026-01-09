@@ -9,7 +9,11 @@ export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
 
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isPublicRoute =
+    publicRoutes.filter(
+      (item) =>
+        nextUrl.pathname === item || nextUrl.pathname.startsWith(`${item}/`)
+    ).length > 0;
   const isAuthRoute = nextUrl.pathname.startsWith("/auth");
 
   if (nextUrl.pathname == "/") {
