@@ -31,3 +31,7 @@ export const AddressFormSchema = z.object({
     .string()
     .min(1, { message: "Please enter a state, region or province." }),
 });
+
+export const AddressUpdateSchema = AddressFormSchema.extend({
+  id: z.number(),
+});

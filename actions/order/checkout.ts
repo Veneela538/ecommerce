@@ -6,7 +6,7 @@ import * as z from "zod";
 
 export const singleOrderCheckout = async (
   variantId: number,
-  values: z.infer<typeof CheckoutFormSchema>
+  values: z.infer<typeof CheckoutFormSchema>,
 ) => {
   const validatedFields = CheckoutFormSchema.safeParse(values);
   const session = await auth();

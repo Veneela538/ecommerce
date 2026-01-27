@@ -1,7 +1,7 @@
 "use server";
 
 import { IProduct } from "@/types";
-import { getCategories } from "./categories/categories";
+import { getCategories } from "./categories";
 import getCategoryProducts from "./category-products";
 
 export interface AllCategoriesProducts {
@@ -17,7 +17,7 @@ const all_categories_products = async (): Promise<AllCategoriesProducts[]> => {
       categoriesList.map(async (category: string) => ({
         category,
         products: (await getCategoryProducts(category))?.data?.content || [],
-      }))
+      })),
     );
     return all_categories_products;
   } catch (error) {

@@ -65,12 +65,19 @@
     "country": "Country",
     "name": "Name",
     "phoneNumber": "Phone Number",
+    "alternativePhoneNumber": "Alternative Phone Number",
     "pincode": "Pincode",
     "addressLine1": "Address Line1",
     "addressLine2": "Address Line2",
     "addressLine3": "Address Line3",
     "city": "City",
-    "state": "State"
+    "state": "State",
+    "addressTitle": "Select a",
+    "shippingAddress": "shipping Address",
+    "billingAddress": "Billing Address",
+    "addNewAddressPopupTitle": "Add New Address",
+    "editAddress": "Edit Address",
+    "removeAddress": "Remove"
   },
   "crud": {
     "success": {

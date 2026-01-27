@@ -5,7 +5,7 @@ import { CheckoutFormSchema } from "@/schemas/checkout-form";
 import * as z from "zod";
 
 export const orderCheckout = async (
-  values: z.infer<typeof CheckoutFormSchema>
+  values: z.infer<typeof CheckoutFormSchema>,
 ) => {
   const validatedFields = CheckoutFormSchema.safeParse(values);
   const session = await auth();
@@ -18,9 +18,7 @@ export const orderCheckout = async (
     return await fetchWrapper.post({
       url: `/user/order`,
       accessToken: session?.accessToken,
-      body: {
-        values,
-      },
+      body: values,
     });
   } catch (error) {
     throw error;

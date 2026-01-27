@@ -1,20 +1,28 @@
 "use client";
-import { useState } from "react";
+import { PaymentMethod } from "@/types";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
-type PaymentMethod = "UPI" | "CARD" | "NET_BANKING" | "COD" | "WALLET";
+type PaymentProps = {
+  isOpen: boolean;
+  selectedPaymentMethod: PaymentMethod | null;
+  onSelectPaymentMethod: (method: PaymentMethod) => void;
+  onUsePayment: () => void;
+  onChange: () => void;
+};
 
-const Payment = () => {
-  const [openPaymentSection, setOpenPaymentSection] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
-    null
-  );
+const Payment = ({
+  isOpen,
+  selectedPaymentMethod,
+  onSelectPaymentMethod,
+  onUsePayment,
+  onChange,
+}: PaymentProps) => {
   return (
     <>
-      {!openPaymentSection && (
+      {!isOpen && (
         <Card className="flex flex-col w-full m-4">
           <div className="flex flex-col gap-4 border border-gray-200 rounded-xl shadow-sm p-4 hover:shadow-md transition">
             <div className="flex items-center justify-between">
@@ -22,7 +30,7 @@ const Payment = () => {
               <Button
                 variant="link"
                 className="p-0 text-sm text-blue-800 hover:underline font-normal"
-                onClick={() => setOpenPaymentSection(true)}
+                onClick={onChange}
               >
                 Change
               </Button>
@@ -35,15 +43,15 @@ const Payment = () => {
         </Card>
       )}
 
-      {openPaymentSection && (
+      {isOpen && (
         <Card className="flex flex-col w-full m-4">
           <div className="flex flex-col gap-4 border border-gray-200 rounded-xl shadow-sm p-4 hover:shadow-md transition">
             <h2 className="text-xl font-bold">Payment Method</h2>
 
             <RadioGroup
-              value={paymentMethod ?? ""}
+              value={selectedPaymentMethod ?? undefined}
               onValueChange={(value) =>
-                setPaymentMethod(value as PaymentMethod)
+                onSelectPaymentMethod(value as PaymentMethod)
               }
               className="space-y-4"
             >
@@ -74,8 +82,8 @@ const Payment = () => {
             </RadioGroup>
             <Button
               className="w-64"
-              disabled={!paymentMethod}
-              onClick={() => setOpenPaymentSection(false)}
+              disabled={!selectedPaymentMethod}
+              onClick={() => selectedPaymentMethod && onUsePayment()}
             >
               Use this payment method
             </Button>

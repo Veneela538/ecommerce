@@ -6,9 +6,12 @@ import { mapProductToCheckoutItem } from "@/lib/mappers/checkout.mapper";
 const CheckoutSingleProduct = async ({
   params,
 }: {
-  params: { pid: string };
+  params: Promise<{ pid: string }>;
 }) => {
-  const response = await getProduct(Number(params.pid));
+  const { pid } = await params;
+  const productId = Number(pid);
+
+  const response = await getProduct(productId);
   const { data: addressResponse } = await getAddress();
 
   const product = response?.data;
@@ -16,6 +19,7 @@ const CheckoutSingleProduct = async ({
     <CheckoutLayout
       items={[mapProductToCheckoutItem(product)]}
       addressResponse={addressResponse}
+      variantId={productId}
     />
   );
 };

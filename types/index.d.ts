@@ -137,3 +137,7 @@ export type UserDetailsResponseType = {
   phoneNumber: string;
   email: string;
 };
+
+export type CheckoutStep = "address" | "payment" | "review";
+
+export type PaymentMethod = "UPI" | "CARD" | "NET_BANKING" | "COD" | "WALLET";

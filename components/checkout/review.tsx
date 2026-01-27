@@ -1,25 +1,35 @@
 "use client";
 import { CheckoutItem } from "@/types";
-import { useState } from "react";
+import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import CheckoutProduct from "./checkout-product";
 
 type Props = {
   items: CheckoutItem[];
+  isOpen: boolean;
+  onChange: () => void;
 };
 
-const ReviewItems = ({ items }: Props) => {
-  const [openReviewSection, setOpenReviewSection] = useState(true);
+const ReviewItems = ({ items, isOpen, onChange }: Props) => {
   return (
     <>
-      {!openReviewSection && (
+      {!isOpen && (
         <Card className="flex flex-col w-full m-4">
           <div className="flex flex-col gap-4 border border-gray-200 rounded-xl shadow-sm p-4 hover:shadow-md transition">
-            <h2 className="text-xl font-bold">Review items and shipping</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold">Review items and shipping</h2>
+              <Button
+                variant="link"
+                className="p-0 text-sm text-blue-800 hover:underline font-normal"
+                onClick={onChange}
+              >
+                Change
+              </Button>
+            </div>
           </div>
         </Card>
       )}
-      {openReviewSection && (
+      {isOpen && (
         <Card className="flex flex-col w-full m-4">
           <div className="flex flex-col gap-4 border border-gray-200 rounded-xl shadow-sm p-4 hover:shadow-md transition">
             <h2 className="text-xl font-bold">Review items and shipping</h2>

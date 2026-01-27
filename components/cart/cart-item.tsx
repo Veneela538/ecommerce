@@ -26,7 +26,7 @@ const CartItem = ({ product }: CartProductsType) => {
     if (product.quantity === quantity) return;
 
     updateCart(product.variantId, quantity).catch((error) =>
-      console.error("Error updating cart:", error)
+      console.error("Error updating cart:", error),
     );
   }, [quantity, product.quantity, product.variantId]);
 
@@ -67,7 +67,7 @@ const CartItem = ({ product }: CartProductsType) => {
               <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
                 {Math.ceil(
                   ((product.price - product.discountedPrice) / product.price) *
-                    100
+                    100,
                 )}
                 % OFF
               </Badge>

@@ -2,11 +2,11 @@
 
 import { auth } from "@/auth";
 import { fetchWrapper } from "@/lib/fetch";
-import { AddressFormSchema } from "@/schemas/address-form";
+import { AddressUpdateSchema } from "@/schemas/address-form";
 import { AddressResponseType } from "@/types";
 
 export const updateAddress = async (values: AddressResponseType) => {
-  const validatedFields = AddressFormSchema.safeParse(values);
+  const validatedFields = AddressUpdateSchema.safeParse(values);
 
   if (!validatedFields.success) {
     return { status: false, message: "Invalid fields!" };
