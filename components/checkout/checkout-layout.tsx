@@ -1,4 +1,6 @@
 "use client";
+import { addToCartAndSavedForLater } from "@/actions/cart/add_to_cart_and_save_for_later";
+import { savedForLater } from "@/actions/cart/save_for_later";
 import { singleOrderCheckout } from "@/actions/order/checkout";
 import { orderCheckout } from "@/actions/order/multiple-order-checkout";
 import Addresses from "@/components/checkout/addresses";
@@ -8,6 +10,7 @@ import ReviewItems from "@/components/checkout/review";
 import { useDictionary } from "@/context/dictionary-context";
 import { AddressResponseType, CheckoutItem, PaymentMethod } from "@/types";
 import { LoaderCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
@@ -20,6 +23,7 @@ type Props = {
 
 const CheckoutLayout = ({ items, addressResponse, variantId = 0 }: Props) => {
   const dict = useDictionary();
+  const router = useRouter();
   const [activeStep, setActiveStep] = useState<
     "address" | "payment" | "review"
   >("address");
@@ -41,6 +45,8 @@ const CheckoutLayout = ({ items, addressResponse, variantId = 0 }: Props) => {
 
   const [isBillingSameAsShipping, setIsBillingSameAsShipping] = useState(true);
 
+  const [isDeletingItem, setIsDeletingItem] = useState(false);
+
   useEffect(() => {
     if (!selectedAddress && addressResponse.length > 0) {
       setSelectedAddress(addressResponse[0]);
@@ -56,6 +62,19 @@ const CheckoutLayout = ({ items, addressResponse, variantId = 0 }: Props) => {
     if (!paymentMethod) return;
     setActiveStep("review");
   }, [paymentMethod]);
+
+  const handleRemoveItem = async (id: number, quantity: number) => {
+    try {
+      setIsDeletingItem(true);
+      if (id === 0) {
+        await addToCartAndSavedForLater(id, quantity);
+      }
+      await savedForLater(id, true);
+    } finally {
+      setIsDeletingItem(false);
+    }
+    if (items.length == 1) router.push("/cart");
+  };
 
   function checkout() {
     startTransition(async () => {
@@ -148,6 +167,7 @@ const CheckoutLayout = ({ items, addressResponse, variantId = 0 }: Props) => {
             items={items}
             isOpen={activeStep === "review"}
             onChange={() => setActiveStep("review")}
+            onRemoveItem={handleRemoveItem}
           />
         </div>
 
@@ -182,9 +202,14 @@ const CheckoutLayout = ({ items, addressResponse, variantId = 0 }: Props) => {
                 <Button
                   className="w-full"
                   onClick={checkout}
-                  disabled={isPending}
+                  disabled={isPending || isDeletingItem}
                 >
-                  {isPending ? (
+                  {isDeletingItem ? (
+                    <>
+                      <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                      Updating items...{" "}
+                    </>
+                  ) : isPending ? (
                     <>
                       <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
                       {dict.common.pleaseWait}

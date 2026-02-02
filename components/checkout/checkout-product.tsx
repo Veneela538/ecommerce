@@ -1,33 +1,29 @@
-import { updateCart } from "@/actions/cart/update-cart";
 import { CheckoutItem } from "@/types";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 type CheckoutProductsType = {
   product: CheckoutItem;
+  onRemoveItem: (id: number, quantity: number) => void;
 };
 
-const CheckoutProduct = ({ product }: CheckoutProductsType) => {
+const CheckoutProduct = ({ product, onRemoveItem }: CheckoutProductsType) => {
   const [quantity, setQuantity] = useState<number>(product.quantity);
-
-  useEffect(() => {
-    if (product.quantity === quantity) return;
-
-    updateCart(product.variantId, quantity).catch((error) =>
-      console.error("Error updating cart:", error)
-    );
-  }, [quantity, product.quantity, product.variantId]);
 
   if (quantity === 0) return null;
 
-  const handleDecrease = () => {
-    if (quantity > 0) {
-      setQuantity((prev) => prev - 1);
-    }
-    if (quantity === 1) {
+  const handleDecrease = async () => {
+    const newQuantity = quantity - 1;
+
+    setQuantity(newQuantity);
+    if (newQuantity === 0) {
+      await onRemoveItem(
+        product.id == 0 ? product.variantId : product.id,
+        newQuantity,
+      );
     }
   };
 
@@ -66,7 +62,7 @@ const CheckoutProduct = ({ product }: CheckoutProductsType) => {
               <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
                 {Math.ceil(
                   ((product.price - product.discountedPrice) / product.price) *
-                    100
+                    100,
                 )}
                 % OFF
               </Badge>
@@ -77,7 +73,7 @@ const CheckoutProduct = ({ product }: CheckoutProductsType) => {
           <div className="flex flex-row items-center bg-gray-100 rounded-lg shadow-inner w-40">
             <Button
               className="bg-gray-500 text-white rounded-none w-1/3"
-              onClick={() => quantity > 0 && setQuantity((prev) => prev - 1)}
+              onClick={handleDecrease}
             >
               {quantity == 1 ? <Trash2 /> : <>-</>}
             </Button>

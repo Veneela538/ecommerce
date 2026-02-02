@@ -1,8 +1,10 @@
 "use client";
+import { savedForLater } from "@/actions/cart/save_for_later";
 import { updateCart } from "@/actions/cart/update-cart";
 import { ICartProduct } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 
@@ -11,6 +13,7 @@ type SavedForLaterProduct = {
   onRemove: (variantId: number) => void;
 };
 const SavedForLaterItem = ({ item, onRemove }: SavedForLaterProduct) => {
+  const router = useRouter();
   const handleDelete = async () => {
     try {
       await updateCart(item.variantId, 0);
@@ -19,7 +22,14 @@ const SavedForLaterItem = ({ item, onRemove }: SavedForLaterProduct) => {
       console.error("Error deleting item:", error);
     }
   };
-  const moveToCart = () => {};
+  const moveToCart = async () => {
+    try {
+      await savedForLater(item.id, false);
+      router.refresh();
+    } catch (error) {
+      console.error("Error Saving for Later:", error);
+    }
+  };
 
   return (
     <>
@@ -56,7 +66,7 @@ const SavedForLaterItem = ({ item, onRemove }: SavedForLaterProduct) => {
                 <p className="line-through">₹{item.price}</p>
                 <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
                   {Math.ceil(
-                    ((item.price - item.discountedPrice) / item.price) * 100
+                    ((item.price - item.discountedPrice) / item.price) * 100,
                   )}
                   % OFF
                 </Badge>

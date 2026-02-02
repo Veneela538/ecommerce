@@ -1,19 +1,27 @@
 import { CheckoutItem, ICartProduct, IProduct } from "@/types";
 
-export const mapProductToCheckoutItem = (product: IProduct): CheckoutItem => ({
-  variantId: product.id,
-  name: product.name,
-  description: product.description,
-  price: product.price,
-  discountedPrice: product.discountedPrice,
-  quantity: product.cartQuantity,
-  imageUrls: product.imageUrls,
-  isAvailable: product.stockQuantity > 0,
-});
+export const mapProductToCheckoutItem = (product: IProduct): CheckoutItem => {
+  const matchedVariant = product.productVariants?.find(
+    (variant) => variant.id === product.id,
+  );
+
+  return {
+    id: 0,
+    variantId: product.id,
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    discountedPrice: matchedVariant?.discountedPrice ?? product.price,
+    quantity: product.cartQuantity,
+    imageUrls: product.imageUrls,
+    isAvailable: product.stockQuantity > 0,
+  };
+};
 
 export const mapCartProductToCheckoutItem = (
-  item: ICartProduct
+  item: ICartProduct,
 ): CheckoutItem => ({
+  id: item.id,
   variantId: item.variantId,
   name: item.name,
   description: item.description,

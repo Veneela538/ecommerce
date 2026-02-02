@@ -5,9 +5,8 @@ import { IProduct } from "@/types";
 import { ArrowRight, Heart, HeartPlus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import CheckoutPopup from "../checkout-popup";
 import LoginPopup from "../login-popup";
 import { Button } from "../ui/button";
 
@@ -21,11 +20,10 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
   const isLoggedIn = status === "authenticated";
 
   const [quantity, setQuantity] = useState(0);
-  const [removeProduct, setRemoveProduct] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [openLoginPopup, setOpenLoginPopup] = useState(false);
-  const [openCheckoutPopup, setOpenCheckoutPopup] = useState(false);
+  // const [openCheckoutPopup, setOpenCheckoutPopup] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -34,18 +32,17 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
     setOpenLoginPopup(false);
     setIsWishlisted(product.isWishlisted);
     setQuantity(product.cartQuantity);
-  }, [isLoggedIn]);
+  }, [product.cartQuantity, product.isWishlisted, isLoggedIn]);
 
   useEffect(() => {
     if (!isLoggedIn) return;
-    if (quantity === 0 && !removeProduct) return;
 
     const timeout = setTimeout(() => {
       updateCartItems();
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [quantity, removeProduct]);
+  }, [quantity]);
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -57,7 +54,6 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
   const updateCartItems = async () => {
     try {
       await updateCart(Number(variantId), quantity);
-      setRemoveProduct(false);
     } catch (error) {
       console.error("Error updating cart:", error);
     }
@@ -65,7 +61,7 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
 
   const goNext = () => {
     setCurrentIndex((prev) =>
-      prev === product.imageUrls.length - 1 ? 0 : prev + 1
+      prev === product.imageUrls.length - 1 ? 0 : prev + 1,
     );
   };
   // await addToCart(product.product.id, product.product.productVariants[0].id, quantity);
@@ -91,6 +87,14 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
     router.push(`?callbackUrl=${encodeURIComponent(currentPath)}`);
 
     setOpenLoginPopup(true);
+  };
+
+  const buyNow = async () => {
+    if (!isLoggedIn) return;
+    await updateCart(Number(variantId), quantity == 0 ? 1 : quantity).catch(
+      (error) => console.error("Error updating cart:", error),
+    );
+    router.push(`/checkout/${product.id}`);
   };
 
   return (
@@ -178,7 +182,13 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
               {quantity == 0 ? (
                 <Button
                   className="bg-gray-600 text-white hover:bg-gray-700"
-                  onClick={() => setQuantity(1)}
+                  onClick={() => {
+                    if (!isLoggedIn) {
+                      openLogin();
+                      return;
+                    }
+                    setQuantity(1);
+                  }}
                 >
                   Add To Cart
                 </Button>
@@ -191,8 +201,7 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
                         openLogin();
                         return;
                       }
-                      if (quantity == 1) {
-                        setRemoveProduct(true);
+                      if (quantity > 0) {
                         setQuantity((prev) => prev - 1);
                       }
                     }}
@@ -218,22 +227,23 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
               <Button
                 disabled={product.stockQuantity == 0}
                 className="bg-[#232f3e] text-white hover:bg-[#1a2430]"
+                // onClick={buyNow}
                 onClick={() => {
                   if (!isLoggedIn) {
                     openLogin();
-                  } else {
-                    setOpenCheckoutPopup(true);
+                    return;
                   }
+                  buyNow();
                 }}
               >
                 Buy Now
               </Button>
-              <CheckoutPopup
+              {/* <CheckoutPopup
                 open={openCheckoutPopup}
                 onClose={() => setOpenCheckoutPopup(false)}
                 isSingleOrderCheckout={true}
                 variantId={product.id}
-              />
+              /> */}
             </div>
             <div className="flex flex-row gap-4 mt-4">
               {product.productVariants.length > 0 && (
@@ -241,7 +251,7 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
                   {product.productVariants.map((variant, i) => (
                     <div
                       key={i}
-                      onClick={() => redirect(`/product/${variant.id}`)}
+                      onClick={() => router.push(`/product/${variant.id}`)}
                       className="cursor-pointer"
                     >
                       {/* IMAGE BOX */}

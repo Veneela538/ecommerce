@@ -1,4 +1,5 @@
 "use client";
+import { savedForLater } from "@/actions/cart/save_for_later";
 import { updateCart } from "@/actions/cart/update-cart";
 import { ICartProduct } from "@/types";
 import { Trash2 } from "lucide-react";
@@ -22,6 +23,14 @@ const CartItem = ({ product }: CartProductsType) => {
   };
   const remove = () => setQuantity(0);
 
+  const saveForLater = async () => {
+    try {
+      await savedForLater(product.id, true);
+      router.refresh();
+    } catch (error) {
+      console.error("Error Saving for Later:", error);
+    }
+  };
   useEffect(() => {
     if (product.quantity === quantity) return;
 
@@ -112,6 +121,13 @@ const CartItem = ({ product }: CartProductsType) => {
             onClick={buyNow}
           >
             Proceed to Buy
+          </Button>
+          <Button
+            variant="link"
+            className="p-0 h-auto text-sm text-blue-800 hover:underline font-normal self-start"
+            onClick={saveForLater}
+          >
+            Save For Later
           </Button>
         </div>
       </div>

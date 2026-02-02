@@ -19,6 +19,7 @@ export interface IVariant {
   imageUrl: string;
   stockQuantity: number;
   isAvailable: boolean;
+  discountedPrice: number;
 }
 
 export interface IProduct {
@@ -50,6 +51,7 @@ export interface ICategoryProduct {
 }
 
 export interface ICartProduct {
+  id: number;
   variantId: number;
   quantity: number;
   name: string;
@@ -106,6 +108,7 @@ export interface IOrder {
 }
 
 export type CheckoutItem = {
+  id: number;
   variantId: number;
   name: string;
   description: string;
