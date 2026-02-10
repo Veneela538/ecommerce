@@ -1,6 +1,8 @@
 "use client";
 import { savedForLater } from "@/actions/cart/save_for_later";
 import { updateCart } from "@/actions/cart/update-cart";
+import { useDictionary } from "@/context/dictionary-context";
+import { buildSlug } from "@/lib/utils";
 import { ICartProduct } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,14 +12,15 @@ import { Button } from "../ui/button";
 
 type SavedForLaterProduct = {
   item: ICartProduct;
-  onRemove: (variantId: number) => void;
+  onRemove: (variantAsin: string) => void;
 };
 const SavedForLaterItem = ({ item, onRemove }: SavedForLaterProduct) => {
   const router = useRouter();
+  const dict = useDictionary();
   const handleDelete = async () => {
     try {
-      await updateCart(item.variantId, 0);
-      onRemove(item.variantId); // 👈 THIS updates UI
+      await updateCart(item.variantAsin, 0);
+      onRemove(item.variantAsin); // 👈 THIS updates UI
     } catch (error) {
       console.error("Error deleting item:", error);
     }
@@ -33,13 +36,13 @@ const SavedForLaterItem = ({ item, onRemove }: SavedForLaterProduct) => {
 
   return (
     <>
-      <div className="flex flex-col" key={item.variantId}>
+      <div className="flex flex-col" key={item.variantAsin}>
         <div className="flex flex-row gap-6  p-4">
           {/* ================================================================= */}
           {/*  ✅ PART 1 — PRODUCT IMAGE                                       */}
           {/* ================================================================= */}
           <div className="relative w-40 h-40 bg-white border rounded-lg flex-shrink-0">
-            <Link href={`/product/${item.variantId}`}>
+            <Link href={`/product/${buildSlug(item.name)}/${item.variantAsin}`}>
               <Image
                 src={item.imageUrls[0]}
                 alt={item.name}
@@ -53,7 +56,10 @@ const SavedForLaterItem = ({ item, onRemove }: SavedForLaterProduct) => {
           {/*  ✅ PART 2 — TITLE + DESCRIPTION                                  */}
           {/* ================================================================= */}
           <div className="flex flex-col justify-center w-2/3">
-            <Link href={`/product/${item.variantId}`} className="block">
+            <Link
+              href={`/product/${buildSlug(item.name)}/${item.variantAsin}`}
+              className="block"
+            >
               <h3 className="font-semibold text-xl text-[#232f3e] mb-1">
                 {item.name}
               </h3>
@@ -78,20 +84,20 @@ const SavedForLaterItem = ({ item, onRemove }: SavedForLaterProduct) => {
               className="w-36 bg-white text-black border border-black hover:bg-gray-200"
               onClick={handleDelete}
             >
-              Delete
+              {dict.cart.saveForLater.item.delete}
             </Button>
 
             <Button
               className="bg-gray-700 text-white hover:bg-gray-800 w-36"
               onClick={moveToCart}
             >
-              Move to Cart
+              {dict.cart.saveForLater.item.moveToCart}
             </Button>
           </div>
         </div>
         {!item.isAvailable && (
           <div className="w-full bg-gray-300 text-black text-center py-3 rounded-b-xl font-semibold">
-            Out Of Stock
+            {dict.cart.saveForLater.item.outOfStock}
           </div>
         )}
       </div>

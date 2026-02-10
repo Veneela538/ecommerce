@@ -66,7 +66,7 @@ const SignupForm = () => {
             setEmailStatus(true);
           }
         })
-        .catch(() => setError("Something went wrong"));
+        .catch(() => setError(dict.common.somethingWentWrong));
     });
   }
 
@@ -252,19 +252,19 @@ const SignupForm = () => {
                     ) : (
                       <>
                         <SiGoogle className="w-5 h-5" />
-                        Continue with Google
+                        {dict.auth.signup.continueWithGoogle}
                       </>
                     )}
                   </Button>
                 </div>
               </div>
               <div className="flex justify-center my-4">
-                Already have an account?
+                {dict.auth.signup.haveAnAccount}
                 <Link
                   href="/auth/login"
                   className="text-blue-600 hover:underline ml-1"
                 >
-                  Login
+                  {dict.auth.signup.login}
                 </Link>
               </div>
             </Form>

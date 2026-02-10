@@ -11,11 +11,16 @@
       "username": "Username",
       "password": "Password",
       "buttonLabel": "Login",
+      "continueWithGoogle": "Continue With Google",
+      "don'tHaveAnAccount": "Don’t have an account? ",
+      "signup": "Signup",
+      "forgotPassword": "Forgot Password?",
       "updateCredentials": {
         "username": "Username",
         "password": "Password",
         "confirmPassword": "Confirm Password",
-        "header": "Update Credentials"
+        "header": "Update Credentials",
+        "submit": "Submit"
       },
       "accountCreated": {
         "username": "Username"
@@ -33,7 +38,13 @@
       "addressLine3": "Address Line3",
       "pincode": "Pincode",
       "buttonLabel": "Signup",
-      "emailSent": "Email successfully sent please check your mail inbox"
+      "emailSent": "Email successfully sent please check your mail inbox",
+      "continueWithGoogle": "Continue With Google",
+      "haveAnAccount": "Already have an account?",
+      "login": "Login"
+    },
+    "forgotPassword": {
+      "submit": "Verify Email"
     }
   },
   "profile": {
@@ -57,6 +68,34 @@
     "action": "Go Home"
   },
   "checkout": {
+    "header": {
+      "home": "My E-Commerce App",
+      "title": "Secure Checkout",
+      "cart": "Cart"
+    },
+    "address": {
+      "phoneNumber": "Phone number ",
+      "billingSameAsShipping": "Billing Same As Shipping",
+      "deliverToThisAddress": "Deliver to this address",
+      "deliverToThisBillingAddress": "Deliver to this billing address"
+    },
+    "payment": {
+      "description": "Use a gift card, voucher or promo code",
+      "paymentMethods": {
+        "scanAndPayWithUPI": "Scan and Pay with UPI",
+        "creditOrDebitCard": "Credit / Debit Card",
+        "netBanking": " Net Banking",
+        "wallet": "Wallet",
+        "cashOrPayOnDelivery": "Cash on Delivery/Pay on Delivery"
+      },
+      "submit": "Use this payment method"
+    },
+    "reviewItems": {
+      "title": "Review items and shipping"
+    },
+    "payWith": "Pay With ",
+    "updatingItems": "Updating items...",
+    "change": "Change",
     "paymentMethod": "Payment Method",
     "shippingAddress": "Shipping Address",
     "billingAddress": "Billing Address"
@@ -90,5 +129,93 @@
       "update": "Error updating record",
       "delete": "Error deleting record"
     }
+  },
+  "product": {
+    "noImageAvailable": "No image available",
+    "outOfStock": "Out Of Stock",
+    "addToCart": "Add To Cart",
+    "buyNow": "Buy Now",
+    "noProduct": "No Product Found",
+    "limitedStock": "Limited Stock, Hurry up! "
+  },
+  "cart": {
+    "title": "Cart Products",
+    "proceedToCheckout": "Proceed to Checkout",
+    "product": {
+      "saveForLater": "Save For Later",
+      "remove": "Remove",
+      "proceedToBuy": "Proceed to Buy"
+    },
+    "orderSummary": {
+      "priceDetails": "PRICE DETAILS",
+      "subTotal": "Subtotal",
+      "discount": "Discount",
+      "tax": "Tax (GST 5%)",
+      "deliveryCharges": "Delivery Charges",
+      "totalAmount": "Total Amount"
+    },
+    "saveForLater": {
+      "title": "Saved for later",
+      "noItemsSavedForLater": "No items saved for later",
+      "item": {
+        "delete": "Delete",
+        "moveToCart": "Move to Cart",
+        "outOfStock": "Out Of Stock"
+      }
+    }
+  },
+  "category": {
+    "title": "Products"
+  },
+  "orders": {
+    "title": "Your Orders",
+    "noOrders": "You have no orders yet.",
+    "orderPlaced": "ORDER PLACED",
+    "total": "TOTAL",
+    "orderNo": "ORDER #",
+    "deliveredOn": "Delivered on ",
+    "shippingAddress": "Shipping Address",
+    "paymentInfo": "Payment Info",
+    "method": "Method",
+    "transactionId": "Transaction ID",
+    "paymentStatus": "Payment Status",
+    "subTotal": "Subtotal",
+    "tax": "Tax",
+    "shippingCharge": "Shipping",
+    "orderTotal": "Order Total",
+    "downloadInvoice": "Download Invoice"
+  },
+  "wishlist": {
+    "title": "Wishlist Products",
+    "item": {
+      "itemAddedAt": "Item Added ",
+      "addedToCart": "Added To Cart",
+      "viewCart": "View Cart",
+      "remove": "Remove",
+      "addToCart": "Add To Cart"
+    }
+  },
+  "header": {
+    "title": "My E-Commerce App",
+    "search": {
+      "placeholder": "Search products..."
+    },
+    "myAccount": {
+      "profile": "Profile",
+      "orders": "Orders",
+      "wishlist": "Wishlist",
+      "notifications": "Notifications",
+      "logout": {
+        "title": "Logout",
+        "alertDialog": {
+          "title": "Are you sure you want to logout?",
+          "cancel": "Cancel",
+          "submit": "Yes, Logout"
+        }
+      }
+    }
+  },
+  "footer": {
+    "body": " My E-Commerce App. All rights reserved."
   }
 }

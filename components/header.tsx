@@ -1,40 +1,26 @@
 "use client";
 
-import { getCategories } from "@/actions/categories/categories";
-
+import { useDictionary } from "@/context/dictionary-context";
+import { buildSlug } from "@/lib/utils";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import MyAccount from "./header/myaccount";
 import SearchBar from "./header/search-bar";
 
 type HeaderType = {
   isAuthenticated: boolean;
+  categories: string[];
 };
 
-export default function Header({ isAuthenticated }: HeaderType) {
-  const [categoriesList, setCategoriesList] = useState<string[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getCategories();
-        console.log("Feteched categories ", res);
-        setCategoriesList(res?.data ?? []);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
+export default function Header({ isAuthenticated, categories }: HeaderType) {
+  const dict = useDictionary();
   return (
     <main>
       <header className="bg-gray-800 text-white p-4">
         <div className="container mx-auto flex justify-between items-center gap-6">
           {/* Logo / App Name */}
           <Link href={"/home"}>
-            <h1 className="text-xl font-bold">My E-Commerce App</h1>
+            <h1 className="text-xl font-bold">{dict.header.title}</h1>
           </Link>
           {/* Navigation */}
           <nav>
@@ -63,10 +49,10 @@ export default function Header({ isAuthenticated }: HeaderType) {
       </header>
       <nav className="bg-gray-500 p-3 shadow">
         <ul className="container mx-auto flex gap-4">
-          {categoriesList.map((cat, index) => (
-            <li key={index} className="text-white">
+          {categories.map((cat) => (
+            <li key={cat} className="text-white">
               <Link
-                href={`/category/${encodeURIComponent(cat)}`} // navigate to category page
+                href={`/category/${buildSlug(cat)}`} // navigate to category page
                 className="hover:bg-gray-700 p-2 rounded"
               >
                 {cat}

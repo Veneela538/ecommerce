@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getDictionary } from "@/lib/dictionaries";
 import Link from "next/link";
 
 type OrderSummaryProps = {
@@ -10,42 +11,45 @@ type OrderSummaryProps = {
   totalAmount: number;
 };
 
-const OrderSummary = ({
+const OrderSummary = async ({
   subtotal,
   discount,
   tax,
   delivery,
   totalAmount,
 }: OrderSummaryProps) => {
+  const dict = await getDictionary("en");
   return (
     <div className="bg-white rounded-lg shadow p-6 w-full lg:w-3/4 mx-auto">
-      <h2 className="text-xl font-bold mb-4">PRICE DETAILS</h2>
+      <h2 className="text-xl font-bold mb-4">
+        {dict.cart.orderSummary.priceDetails}
+      </h2>
 
       <div className="space-y-3 text-sm text-gray-700">
         <div className="flex justify-between">
-          <span>Subtotal</span>
+          <span>{dict.cart.orderSummary.subTotal}</span>
           <span>₹{subtotal}</span>
         </div>
 
         <div className="flex justify-between text-green-600">
-          <span>Discount</span>
+          <span>{dict.cart.orderSummary.discount}</span>
           <span>-₹{discount}</span>
         </div>
 
         <div className="flex justify-between">
-          <span>Tax (GST 5%)</span>
+          <span>{dict.cart.orderSummary.tax}</span>
           <span>₹{tax}</span>
         </div>
 
         <div className="flex justify-between">
-          <span>Delivery Charges</span>
+          <span>{dict.cart.orderSummary.deliveryCharges}</span>
           <span>₹{delivery}</span>
         </div>
 
         <hr />
 
         <div className="flex justify-between font-bold text-base">
-          <span>Total Amount</span>
+          <span>{dict.cart.orderSummary.totalAmount}</span>
           <span>₹{totalAmount}</span>
         </div>
       </div>
@@ -55,7 +59,7 @@ const OrderSummary = ({
       </Badge>
 
       <Link href="/checkout" className="block mt-6">
-        <Button className="w-full mt-6">Proceed to Checkout</Button>
+        <Button className="w-full mt-6">{dict.cart.proceedToCheckout}</Button>
       </Link>
     </div>
   );

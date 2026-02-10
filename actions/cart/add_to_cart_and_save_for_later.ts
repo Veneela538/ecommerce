@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { fetchWrapper } from "@/lib/fetch";
 
 export const addToCartAndSavedForLater = async (
-  variantId: number,
+  variantAsin: string,
   quantity: number,
 ) => {
   const session = await auth();
@@ -13,7 +13,7 @@ export const addToCartAndSavedForLater = async (
       url: `/user/cart/save-for-later`,
       accessToken: session?.accessToken,
       body: {
-        variantId: variantId,
+        variantAsin: variantAsin,
         quantity: quantity,
       },
     });

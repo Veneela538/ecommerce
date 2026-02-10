@@ -1,5 +1,6 @@
 "use client";
 
+import { buildSlug } from "@/lib/utils";
 import { ICategoryProduct } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,10 +19,13 @@ type DisplayProductsType = {
 export const Item = ({ product }: DisplayProductsType) => {
   return (
     <Card
-      key={product.id}
+      key={product.variantAsin}
       className="flex flex-col h-[420px] border border-gray-200 shadow-md rounded-xl hover:shadow-lg transition w-[325px] flex-shrink-0"
     >
-      <Link key={product.id} href={`/product/${product.id}`}>
+      <Link
+        key={product.variantAsin}
+        href={`/product/${buildSlug(product.title)}/${product.variantAsin}`}
+      >
         <CardHeader className="p-0">
           {/* Image container */}
           <div className="relative w-full h-64 bg-white">

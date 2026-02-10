@@ -58,12 +58,12 @@ const UpdateCredentials = () => {
             password: values.password,
           };
           login(loginData).catch(() => {
-            setError("Something went wrong");
+            setError(dict.common.somethingWentWrong);
           });
           router.push("/home");
         })
         .catch(() => {
-          setError("Something went wrong");
+          setError(dict.common.somethingWentWrong);
         });
     });
   }
@@ -136,7 +136,7 @@ const UpdateCredentials = () => {
             </div>
             <FormError message={error} />
             <Button type="submit" className="w-full" disabled={isSubmitPending}>
-              Submit
+              {dict.auth.login.updateCredentials.submit}
             </Button>
           </form>
         </Form>

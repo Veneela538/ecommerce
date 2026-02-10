@@ -3,10 +3,10 @@
 import { auth } from "@/auth";
 import { fetchWrapper } from "@/lib/fetch";
 
-export const deleteFromWishlist = async (variantId: number) => {
+export const deleteFromWishlist = async (variantAsin: string) => {
   const session = await auth();
   return fetchWrapper.delete({
-    url: `/user/wishlist/${variantId}`,
+    url: `/user/wishlist/${variantAsin}`,
     accessToken: session?.accessToken,
   });
 };

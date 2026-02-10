@@ -2,11 +2,11 @@
 import { auth } from "@/auth";
 import { fetchWrapper } from "@/lib/fetch";
 
-const getProduct = async (pid: number) => {
+const getProduct = async (asin: string) => {
   const session = await auth();
   try {
     return await fetchWrapper.get({
-      url: `/public/product/${pid}`,
+      url: `/public/product/${asin}`,
       accessToken: session?.accessToken,
     });
   } catch (error) {

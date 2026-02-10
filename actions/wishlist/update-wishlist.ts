@@ -3,14 +3,14 @@
 import { auth } from "@/auth";
 import { fetchWrapper } from "@/lib/fetch";
 
-export const updateWishlist = async (variantId: number) => {
+export const updateWishlist = async (variantAsin: string) => {
   const session = await auth();
   try {
     return await fetchWrapper.patch({
       url: `/user/wishlist`,
       accessToken: session?.accessToken,
       body: {
-        variantId: variantId,
+        variantAsin: variantAsin,
       },
     });
   } catch (error) {

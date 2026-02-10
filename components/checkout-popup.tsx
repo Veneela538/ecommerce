@@ -71,7 +71,7 @@ export default function CheckoutPopup({
             setError("Invalid product selected");
             return;
           }
-          await singleOrderCheckout(variantId, values);
+          await singleOrderCheckout(String(variantId), values);
         } else {
           await orderCheckout(values);
         }
@@ -82,7 +82,7 @@ export default function CheckoutPopup({
         setError(
           err instanceof Error
             ? err.message
-            : "Checkout failed. Something went wrong"
+            : "Checkout failed. Something went wrong",
         );
       }
     });
@@ -167,7 +167,7 @@ export default function CheckoutPopup({
                                 if (sameAddress) {
                                   form.setValue(
                                     "billingAddress",
-                                    e.target.value
+                                    e.target.value,
                                   );
                                 }
                               }}
@@ -188,7 +188,7 @@ export default function CheckoutPopup({
                           if (isChecked) {
                             form.setValue(
                               "billingAddress",
-                              form.getValues("shippingAddress")
+                              form.getValues("shippingAddress"),
                             );
                           }
                         }}

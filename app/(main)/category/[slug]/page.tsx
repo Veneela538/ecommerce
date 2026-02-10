@@ -1,16 +1,17 @@
 import { ProductsList } from "@/components/home/products-list";
+import { unslugify } from "@/lib/utils";
 
 export default async function CategoryProductList({
   params,
 }: {
-  params: Promise<{ category: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { category } = await params;
+  const { slug } = await params;
 
   return (
     <main className="min-h-screen bg-gray-100 p-10">
       <div>
-        <ProductsList category={category} />
+        <ProductsList category={unslugify(slug)} />
       </div>
     </main>
   );

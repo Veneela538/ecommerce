@@ -10,6 +10,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useDictionary } from "@/context/dictionary-context";
 import { Bell, Heart, LogOut, Package, User, UserCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
@@ -22,6 +23,7 @@ import {
 } from "../ui/dropdown-menu";
 
 const MyAccount = () => {
+  const dict = useDictionary();
   return (
     <>
       <AlertDialog>
@@ -33,35 +35,35 @@ const MyAccount = () => {
             <DropdownMenuItem asChild>
               <Link href="/profile">
                 <User />
-                <span>Profile</span>
+                <span>{dict.header.myAccount.profile}</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/orders">
                 <Package />
-                <span>Orders</span>
+                <span>{dict.header.myAccount.orders}</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/wishlist">
                 <Heart />
-                <span>Wishlist</span>
+                <span>{dict.header.myAccount.wishlist}</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/notifications">
                 <Bell />
-                <span>Notifications</span>
+                <span>{dict.header.myAccount.notifications}</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <AlertDialogTrigger asChild>
               <DropdownMenuItem>
                 <LogOut className="h-5 w-5" />
-                <span>Logout</span>
+                <span>{dict.header.myAccount.logout.title}</span>
               </DropdownMenuItem>
             </AlertDialogTrigger>
           </DropdownMenuContent>
@@ -70,15 +72,19 @@ const MyAccount = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              Are you sure you want to logout?
+              {dict.header.myAccount.logout.alertDialog.title}
             </AlertDialogTitle>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>
+              {dict.header.myAccount.logout.alertDialog.cancel}
+            </AlertDialogCancel>
             <form action={logout}>
               <AlertDialogAction asChild>
-                <Button type="submit">Yes, Logout</Button>
+                <Button type="submit">
+                  {dict.header.myAccount.logout.alertDialog.submit}
+                </Button>
               </AlertDialogAction>
             </form>
           </AlertDialogFooter>

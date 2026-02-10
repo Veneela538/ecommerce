@@ -14,7 +14,7 @@ export interface ISignUpDetails {
 }
 
 export interface IVariant {
-  id: number;
+  variantAsin: string;
   price: number;
   imageUrl: string;
   stockQuantity: number;
@@ -23,7 +23,7 @@ export interface IVariant {
 }
 
 export interface IProduct {
-  id: number;
+  productVariantAsin: string;
   category: string;
   name: string;
   description: string;
@@ -43,7 +43,7 @@ export interface IProduct {
 }
 
 export interface ICategoryProduct {
-  id: number;
+  variantAsin: string;
   title: string;
   rating: number;
   imageUrl: string;
@@ -52,7 +52,7 @@ export interface ICategoryProduct {
 
 export interface ICartProduct {
   id: number;
-  variantId: number;
+  variantAsin: string;
   quantity: number;
   name: string;
   description: string;
@@ -65,7 +65,7 @@ export interface ICartProduct {
 
 export interface IWishlistProduct {
   id: number;
-  variantId: number;
+  variantAsin: string;
   name: string;
   description: number;
   price: number;
@@ -109,7 +109,7 @@ export interface IOrder {
 
 export type CheckoutItem = {
   id: number;
-  variantId: number;
+  variantAsin: string;
   name: string;
   description: string;
   price: number;

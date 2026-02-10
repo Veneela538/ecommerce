@@ -1,9 +1,11 @@
 "use client";
 import { updateCart } from "@/actions/cart/update-cart";
+import { deleteFromWishlist } from "@/actions/wishlist/delete-from-wishlist";
 import { updateWishlist } from "@/actions/wishlist/update-wishlist";
+import { useDictionary } from "@/context/dictionary-context";
+import { buildSlug } from "@/lib/utils";
 import { IProduct } from "@/types";
 import { ArrowRight, Heart, HeartPlus } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,52 +14,64 @@ import { Button } from "../ui/button";
 
 type ProductType = {
   product: IProduct;
-  variantId?: number | null;
+  variantAsin: string;
+  isLoggedIn: boolean;
 };
 
-const ProductDetails = ({ product, variantId }: ProductType) => {
-  const { data: session, status } = useSession();
-  const isLoggedIn = status === "authenticated";
-
-  const [quantity, setQuantity] = useState(0);
+const ProductDetails = ({ product, variantAsin, isLoggedIn }: ProductType) => {
+  // const isLoggedIn = status === "authenticated";
+  const dict = useDictionary();
+  const [quantity, setQuantity] = useState(product.cartQuantity);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(
+    product.isWishlisted ?? false,
+  );
   const [openLoginPopup, setOpenLoginPopup] = useState(false);
   // const [openCheckoutPopup, setOpenCheckoutPopup] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    if (!isLoggedIn) return;
+  // useEffect(() => {
+  //   if (!isLoggedIn) return;
 
-    setOpenLoginPopup(false);
-    setIsWishlisted(product.isWishlisted);
-    setQuantity(product.cartQuantity);
-  }, [product.cartQuantity, product.isWishlisted, isLoggedIn]);
+  //   // setOpenLoginPopup(false);
+  //   setIsWishlisted(product.isWishlisted);
+  //   setQuantity(product.cartQuantity);
+  // }, [product.cartQuantity, product.isWishlisted, isLoggedIn]);
 
   useEffect(() => {
-    if (!isLoggedIn) return;
+    async function updateCartItems() {
+      try {
+        await updateCart(variantAsin, quantity);
+      } catch (error) {
+        console.error(dict.crud.error.update);
+      }
+    }
 
     const timeout = setTimeout(() => {
       updateCartItems();
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [quantity]);
+  }, [quantity, variantAsin]);
 
   useEffect(() => {
-    if (!isLoggedIn) return;
-    if (product.isWishlisted === isWishlisted) return;
-
-    updateWishlistItems();
-  }, [isWishlisted]);
-
-  const updateCartItems = async () => {
-    try {
-      await updateCart(Number(variantId), quantity);
-    } catch (error) {
-      console.error("Error updating cart:", error);
+    async function updateWishlistItems() {
+      try {
+        if (product.isWishlisted != isWishlisted) {
+          if (isWishlisted) await updateWishlist(variantAsin);
+          else await deleteFromWishlist(variantAsin);
+        }
+      } catch (error) {
+        console.error("Error updating wishlist", error);
+      }
     }
-  };
+
+    const timeout = setTimeout(() => {
+      updateWishlistItems();
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [isWishlisted, product.isWishlisted, variantAsin]);
 
   const goNext = () => {
     setCurrentIndex((prev) =>
@@ -65,16 +79,6 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
     );
   };
   // await addToCart(product.product.id, product.product.productVariants[0].id, quantity);
-
-  const updateWishlistItems = async () => {
-    try {
-      if (product.isWishlisted != isWishlisted) {
-        await updateWishlist(Number(variantId));
-      }
-    } catch (error) {
-      console.error("Error updating wishlist", error);
-    }
-  };
 
   const toggleWishlist = () => {
     setIsWishlisted((prev) => !prev);
@@ -90,11 +94,13 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
   };
 
   const buyNow = async () => {
-    if (!isLoggedIn) return;
-    await updateCart(Number(variantId), quantity == 0 ? 1 : quantity).catch(
-      (error) => console.error("Error updating cart:", error),
-    );
-    router.push(`/checkout/${product.id}`);
+    await updateCart(variantAsin, quantity == 0 ? 1 : quantity)
+      .then(() => {
+        router.push(
+          `/checkout/${buildSlug(product.name)}/${product.productVariantAsin}`,
+        );
+      })
+      .catch(() => console.error(dict.crud.error.update));
   };
 
   return (
@@ -116,7 +122,7 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-500">
-                  No image available
+                  {dict.product.noImageAvailable}
                 </div>
               )}
             </div>
@@ -170,12 +176,12 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
             </div>
             {product.stockQuantity > 0 && product.stockQuantity <= 5 && (
               <div className="strong bg-slate-300 font-extrabold text-center p-2 my-2 rounded text-red-600 ">
-                Limited Stock, Hurry up! Only {product.stockQuantity} left.
+                {dict.product.limitedStock} Only {product.stockQuantity} left.
               </div>
             )}
             {product.stockQuantity == 0 && (
               <div className="bg-gray-200 text-black font-extrabold text-center rounded p-2 my-2">
-                Out Of Stock
+                {dict.product.outOfStock}
               </div>
             )}
             <div className="flex flex-row justify-between gap-4 pt-2">
@@ -190,7 +196,7 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
                     setQuantity(1);
                   }}
                 >
-                  Add To Cart
+                  {dict.product.addToCart}
                 </Button>
               ) : (
                 <div className="flex flex-row bg-gray-200">
@@ -236,7 +242,7 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
                   buyNow();
                 }}
               >
-                Buy Now
+                {dict.product.buyNow}
               </Button>
               {/* <CheckoutPopup
                 open={openCheckoutPopup}
@@ -251,7 +257,11 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
                   {product.productVariants.map((variant, i) => (
                     <div
                       key={i}
-                      onClick={() => router.push(`/product/${variant.id}`)}
+                      onClick={() =>
+                        router.push(
+                          `/product/${buildSlug(product.name)}/${variant.variantAsin}`,
+                        )
+                      }
                       className="cursor-pointer"
                     >
                       {/* IMAGE BOX */}
@@ -274,7 +284,7 @@ const ProductDetails = ({ product, variantId }: ProductType) => {
                       {/* OUT OF STOCK LABEL */}
                       {!variant.isAvailable && (
                         <p className="text-center text-xs text-red-600 font-bold">
-                          Out of Stock
+                          {dict.product.outOfStock}
                         </p>
                       )}
                     </div>

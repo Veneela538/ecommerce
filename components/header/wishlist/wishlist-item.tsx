@@ -3,6 +3,8 @@ import { updateCart } from "@/actions/cart/update-cart";
 import { deleteFromWishlist } from "@/actions/wishlist/delete-from-wishlist";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useDictionary } from "@/context/dictionary-context";
+import { buildSlug } from "@/lib/utils";
 import { IWishlistProduct } from "@/types";
 import { Check, X } from "lucide-react";
 import Image from "next/image";
@@ -15,6 +17,7 @@ type WishlistProductsType = {
 };
 
 const WishlistItem = ({ product }: WishlistProductsType) => {
+  const dict = useDictionary();
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [isRemoved, setIsRemoved] = useState(false);
   const router = useRouter();
@@ -33,17 +36,14 @@ const WishlistItem = ({ product }: WishlistProductsType) => {
   const remove = () => {
     try {
       setIsRemoved(true);
-      deleteFromWishlist(product.variantId);
+      deleteFromWishlist(product.variantAsin);
     } catch (error) {
       throw error;
     }
   };
   const addToCart = async () => {
-    await updateCart(product.variantId, 1);
+    await updateCart(product.variantAsin, 1);
     setIsAddedToCart(true);
-  };
-  const buyNow = () => {
-    console.log("Order Placed");
   };
   return (
     <Card className="flex flex-col">
@@ -61,7 +61,9 @@ const WishlistItem = ({ product }: WishlistProductsType) => {
         {/*  ✅ PART 1 — PRODUCT IMAGE                                       */}
         {/* ================================================================= */}
         <div className="relative w-40 h-40 bg-white border rounded-lg flex-shrink-0">
-          <Link href={`/product/${product.variantId}`}>
+          <Link
+            href={`/product/${buildSlug(product.name)}/${product.variantAsin}`}
+          >
             <Image
               src={product.imageUrl}
               alt={product.name}
@@ -74,7 +76,10 @@ const WishlistItem = ({ product }: WishlistProductsType) => {
         {/*  ✅ PART 2 — TITLE + DESCRIPTION + INSTOCK + ADDED AT             */}
         {/* ================================================================= */}
         <div className="flex flex-col justify-center w-2/3">
-          <Link href={`/product/${product.variantId}`} className="block">
+          <Link
+            href={`/product/${buildSlug(product.name)}/${product.variantAsin}`}
+            className="block"
+          >
             <h3 className="font-semibold text-xl text-[#232f3e] mb-1">
               {product.name}
             </h3>
@@ -90,7 +95,8 @@ const WishlistItem = ({ product }: WishlistProductsType) => {
               {product.isAvailable ? "In Stock" : "Out Of Stock"}
             </p>
             <p className="text-gray-600 text-sm line-clamp-3 mb-2">
-              Item Added {formatDate(product.addedAt)}
+              {dict.wishlist.item.itemAddedAt}
+              {formatDate(product.addedAt)}
             </p>
           </Link>
         </div>
@@ -102,13 +108,13 @@ const WishlistItem = ({ product }: WishlistProductsType) => {
             <div className="flex flex-col items-center gap-3">
               <div className="flex items-center justify-center gap-2 bg-green-100 w-36 p-2 text-green-700 font-semibold text-sm rounded-md">
                 <Check className="w-4 h-4" />
-                <span>Added to Cart</span>
+                <span>{dict.wishlist.item.addedToCart}</span>
               </div>
               <Button
                 className="w-36 bg-white text-black border border-black hover:bg-gray-200"
                 onClick={() => router.push("/cart")}
               >
-                View Cart
+                {dict.wishlist.item.viewCart}
               </Button>
             </div>
           ) : (
@@ -117,13 +123,13 @@ const WishlistItem = ({ product }: WishlistProductsType) => {
                 className="w-36 bg-white text-black border border-black hover:bg-gray-200"
                 onClick={remove}
               >
-                Remove
+                {dict.wishlist.item.remove}
               </Button>
               <Button
                 className="bg-gray-700 text-white hover:bg-gray-800 w-36"
                 onClick={addToCart}
               >
-                Add To Cart
+                {dict.wishlist.item.addToCart}
               </Button>
               {/* <Button
                 className="bg-gray-700 text-white hover:bg-gray-800 w-36"

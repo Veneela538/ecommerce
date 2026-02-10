@@ -2,10 +2,11 @@
 import { auth } from "@/auth";
 import { fetchWrapper } from "@/lib/fetch";
 import { CheckoutFormSchema } from "@/schemas/checkout-form";
+import { revalidatePath } from "next/cache";
 import * as z from "zod";
 
 export const singleOrderCheckout = async (
-  variantId: number,
+  variantAsin: string,
   values: z.infer<typeof CheckoutFormSchema>,
 ) => {
   const validatedFields = CheckoutFormSchema.safeParse(values);
@@ -20,11 +21,15 @@ export const singleOrderCheckout = async (
       url: `/user/single-order`,
       accessToken: session?.accessToken,
       body: {
-        variantId: variantId,
+        variantAsin: variantAsin,
         ...values,
       },
     });
   } catch (error) {
     throw error;
   }
+};
+
+export const refreshCheckout = async () => {
+  revalidatePath(`/checkout`);
 };

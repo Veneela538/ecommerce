@@ -49,7 +49,7 @@ const LoginForm = ({ inDialog = false }) => {
         .then(() => {
           window.location.assign(callbackUrl ?? "/home");
         })
-        .catch(() => setError("Something went wrong"));
+        .catch(() => setError(dict.common.somethingWentWrong));
     });
   }
 
@@ -142,17 +142,17 @@ const LoginForm = ({ inDialog = false }) => {
               ) : (
                 <>
                   <SiGoogle className="w-5 h-5" />
-                  Continue with Google
+                  {dict.auth.login.continueWithGoogle}
                 </>
               )}
             </Button>
             <h1>
-              Don’t have an account?{" "}
+              {dict.auth.login["don'tHaveAnAccount"]}
               <Link
                 href="/auth/signup"
                 className="text-blue-600 hover:underline ml-1"
               >
-                Signup
+                {dict.auth.login.signup}
               </Link>
             </h1>
             <h1>
@@ -160,7 +160,7 @@ const LoginForm = ({ inDialog = false }) => {
                 href="/auth/login/forgot-password"
                 className="text-blue-600 hover:underline ml-1"
               >
-                Forgot Password?
+                {dict.auth.login.forgotPassword}
               </Link>
             </h1>
           </form>

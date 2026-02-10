@@ -1,22 +1,26 @@
+import { getDictionary } from "@/lib/dictionaries";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
 
-const CheckoutHeader = () => {
+const CheckoutHeader = async () => {
+  const dict = await getDictionary("en");
   return (
     <main>
       <header className="bg-gray-800 text-white p-4">
         <div className="container mx-auto flex justify-between items-center gap-6">
           {/* Logo / App Name */}
           <Link href={"/home"}>
-            <h1 className="text-xl font-bold">My E-Commerce App</h1>
+            <h1 className="text-xl font-bold">{dict.checkout.header.home}</h1>
           </Link>
-          <h1 className="text-xl font-bold">Secure Checkout</h1>
+          <h1 className="text-xl font-bold">{dict.checkout.header.title}</h1>
           <Link
             href="/cart"
             className="flex items-center gap-1 hover:text-gray-300"
           >
             <ShoppingCart className="h-7 w-7 mt-2" />
-            <span className="mt-4 text-sm font-bold">Cart</span>
+            <span className="mt-4 text-sm font-bold">
+              {dict.checkout.header.cart}
+            </span>
           </Link>
         </div>
       </header>

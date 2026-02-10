@@ -1,9 +1,9 @@
+import { getCategories } from "@/actions/categories/categories";
 import { auth } from "@/auth";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
-import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "Ecommerce App",
@@ -16,14 +16,15 @@ export default async function MainLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
+  const categories = await getCategories();
   return (
-    <SessionProvider
-      // refetchInterval={1}
-      session={session}
-    >
-      <Header isAuthenticated={session?.user?.userId != null} />
-      <main className="min-h-screen flex-grow">{children}</main>
+    <>
+      <Header
+        isAuthenticated={!!session?.user?.userId}
+        categories={categories?.data ?? []}
+      />
+      <div className="min-h-screen flex-grow">{children}</div>
       <Footer />
-    </SessionProvider>
+    </>
   );
 }

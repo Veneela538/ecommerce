@@ -1,8 +1,11 @@
 "use client";
+
 import { deleteAddress } from "@/actions/address/delete-address";
 import { refreshAddress } from "@/actions/address/refresh-address";
+import { useCheckout } from "@/context/checkout";
 import { useDictionary } from "@/context/dictionary-context";
 import { AddressResponseType } from "@/types";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
@@ -14,32 +17,28 @@ import EditAddressPopup from "./edit-address";
 
 type AddressesType = {
   addressListResponse: AddressResponseType[];
-  isOpen: boolean;
-  selectedAddress?: AddressResponseType | null;
-  setSelectedAddress?: (address: AddressResponseType | null) => void;
-  billingAddress?: AddressResponseType | null;
-  setBillingAddress?: (address: AddressResponseType | null) => void;
-  isBillingSame?: boolean;
-  setIsBillingSameAsShipping?: (value: boolean) => void;
-  addressType: "billing" | "shipping";
-  onDeliver?: () => void;
-  onChange: () => void;
+  addressType: "billing" | "delivery";
 };
 
-const Addresses = ({
-  addressListResponse,
-  isOpen,
-  selectedAddress,
-  setSelectedAddress,
-  billingAddress,
-  setBillingAddress,
-  isBillingSame,
-  setIsBillingSameAsShipping,
-  addressType,
-  onDeliver,
-  onChange,
-}: AddressesType) => {
+const Addresses = ({ addressListResponse, addressType }: AddressesType) => {
   const dict = useDictionary();
+  const checkout = useCheckout();
+  const open = checkout?.stage == addressType;
+
+  useEffect(() => {
+    if (addressListResponse.length === 0) return;
+
+    if (addressType === "delivery" && checkout?.deliveryAddress == null) {
+      checkout?.setDeliveryAddress(addressListResponse[0]);
+      if (checkout.isBillingSameAsShipping) {
+        checkout?.setBillingAddress(addressListResponse[0]);
+      }
+    }
+
+    if (addressType === "billing" && checkout?.billingAddress == null) {
+      checkout?.setBillingAddress(addressListResponse[0]);
+    }
+  }, [addressListResponse, addressType, checkout]);
 
   const formatAddress = (address?: AddressResponseType): string => {
     if (!address) return "";
@@ -69,34 +68,37 @@ const Addresses = ({
 
   return (
     <>
-      {isOpen && (
+      {open && (
         <Card className="flex flex-col w-full m-4">
           <div className="flex flex-col gap-4 border border-gray-200 rounded-xl shadow-sm p-4 hover:shadow-md transition">
             <h2 className="text-xl font-bold">
               {dict.address.addressTitle}{" "}
-              {addressType == "shipping"
+              {addressType == "delivery"
                 ? dict.address.shippingAddress
                 : dict.address.billingAddress}
             </h2>
             <hr />
             <h2 className="text-xl font-bold">
-              Delivery addresses({addressListResponse.length})
+              {addressType == "delivery"
+                ? dict.address.shippingAddress
+                : dict.address.billingAddress}
+              ({addressListResponse.length})
             </h2>
             {addressListResponse.length > 0 && (
               <RadioGroup
                 value={
-                  addressType == "shipping"
-                    ? String(selectedAddress?.id)
-                    : String(billingAddress?.id)
+                  addressType == "delivery"
+                    ? String(checkout?.deliveryAddress?.id)
+                    : String(checkout?.billingAddress?.id)
                 }
                 onValueChange={(value) => {
                   const addr = addressListResponse.find(
                     (a) => String(a.id) === value,
                   );
-                  if (addr && addressType == "shipping") {
-                    setSelectedAddress?.(addr);
+                  if (addr && addressType == "delivery") {
+                    checkout?.setDeliveryAddress(addr);
                   } else if (addr && addressType == "billing") {
-                    setBillingAddress?.(addr);
+                    checkout?.setBillingAddress(addr);
                   }
                 }}
                 className="space-y-2"
@@ -111,7 +113,10 @@ const Addresses = ({
                       <div className="space-y-2">
                         <p className="font-bold">{address.name}</p>
                         <p>{formatAddress(address)}</p>
-                        <p>Phone number: {address?.phoneNumber}</p>
+                        <p>
+                          {dict.checkout.address.phoneNumber}
+                          {address?.phoneNumber}
+                        </p>
                         <EditAddressPopup address={address} />
                         <Button
                           variant="link"
@@ -130,54 +135,62 @@ const Addresses = ({
             )}
 
             <AddAddressPopup />
-            {addressType == "shipping" && (
-              <>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="sameAddress"
-                    checked={isBillingSame}
-                    onCheckedChange={(checked) => {
-                      const value = Boolean(checked);
-                      setIsBillingSameAsShipping?.(value);
-                    }}
-                  />
-                  <label
-                    htmlFor="sameAddress"
-                    className="text-sm text-gray-600 cursor-pointer"
-                  >
-                    Billing address same as shipping
-                  </label>
-                </div>
-                <Button
-                  className="rounded w-40"
-                  type="button"
-                  onClick={onDeliver}
-                  disabled={!selectedAddress}
-                >
-                  Deliver to this address
-                </Button>
-              </>
-            )}
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="sameAddress"
+                checked={checkout?.isBillingSameAsShipping}
+                onCheckedChange={(checked) => {
+                  const value = Boolean(checked);
+                  checkout?.setIsBillingSameAsShipping(value);
+                }}
+              />
+              <label
+                htmlFor="sameAddress"
+                className="text-sm text-gray-600 cursor-pointer"
+              >
+                {dict.checkout.address.billingSameAsShipping}
+              </label>
+            </div>
+            <Button
+              className="rounded w-40"
+              type="button"
+              disabled={!checkout?.deliveryAddress}
+              onClick={() => {
+                addressType == "billing"
+                  ? checkout?.setStage("payment")
+                  : !checkout.isBillingSameAsShipping
+                    ? checkout?.setStage("billing")
+                    : checkout?.setStage("payment");
+              }}
+            >
+              {dict.checkout.address.deliverToThisAddress}
+            </Button>
           </div>
         </Card>
       )}
-      {!isOpen && (
+      {!open && (
         <Card className="flex flex-col w-full m-4">
           <div className="flex flex-col gap-4 border border-gray-200 rounded-xl shadow-sm p-4 hover:shadow-md transition">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold">
-                Delivering to {selectedAddress?.name}
+                Delivering to {checkout?.deliveryAddress?.name}
               </h2>
               <Button
                 variant="link"
                 className="p-0 text-sm text-blue-800 hover:underline font-normal"
-                onClick={onChange}
+                onClick={() => {
+                  addressType == "delivery"
+                    ? checkout.setStage("delivery")
+                    : checkout.setStage("billing");
+                }}
               >
-                Change
+                {dict.checkout.change}
               </Button>
             </div>
             <p className="text-sm">
-              {selectedAddress ? formatAddress(selectedAddress) : null}
+              {checkout?.deliveryAddress
+                ? formatAddress(checkout.deliveryAddress)
+                : null}
             </p>
           </div>
         </Card>

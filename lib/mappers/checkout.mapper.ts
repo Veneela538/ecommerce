@@ -2,12 +2,12 @@ import { CheckoutItem, ICartProduct, IProduct } from "@/types";
 
 export const mapProductToCheckoutItem = (product: IProduct): CheckoutItem => {
   const matchedVariant = product.productVariants?.find(
-    (variant) => variant.id === product.id,
+    (variant) => variant.variantAsin === product.productVariantAsin,
   );
 
   return {
     id: 0,
-    variantId: product.id,
+    variantAsin: product.productVariantAsin,
     name: product.name,
     description: product.description,
     price: product.price,
@@ -22,7 +22,7 @@ export const mapCartProductToCheckoutItem = (
   item: ICartProduct,
 ): CheckoutItem => ({
   id: item.id,
-  variantId: item.variantId,
+  variantAsin: item.variantAsin,
   name: item.name,
   description: item.description,
   price: item.price,

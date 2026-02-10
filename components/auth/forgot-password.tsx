@@ -33,7 +33,7 @@ const ForgotPassword = () => {
 
     startTransition(() => {
       verifyEmail(values.username).catch(() => {
-        setError("Something went wrong");
+        setError(dict.common.somethingWentWrong);
       });
     });
   }
@@ -66,7 +66,7 @@ const ForgotPassword = () => {
             {error && <FormError message={error} />}
             <div className="flex justify-end">
               <Button disabled={isPending} type="submit">
-                Verify Email
+                {dict.auth.forgotPassword.submit}
               </Button>
             </div>
           </form>
