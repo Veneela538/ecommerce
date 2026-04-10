@@ -15,6 +15,7 @@
       "don'tHaveAnAccount": "Don’t have an account? ",
       "signup": "Signup",
       "forgotPassword": "Forgot Password?",
+      "IncorrectCredentials": "Incorrect username or password!",
       "updateCredentials": {
         "username": "Username",
         "password": "Password",
@@ -88,7 +89,9 @@
         "wallet": "Wallet",
         "cashOrPayOnDelivery": "Cash on Delivery/Pay on Delivery"
       },
-      "submit": "Use this payment method"
+      "submit": "Use this payment method",
+      "paymentCancelled": "Your payment has been cancelled.",
+      "paymentSuccess": "Payment completed successfully."
     },
     "reviewItems": {
       "title": "Review items and shipping"

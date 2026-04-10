@@ -2,6 +2,7 @@
 
 import { addToCartAndSavedForLater } from "@/actions/cart/add_to_cart_and_save_for_later";
 import { savedForLater } from "@/actions/cart/save_for_later";
+import { updateCart } from "@/actions/cart/update-cart";
 import { refreshCheckout } from "@/actions/order/checkout";
 import { useCheckout } from "@/context/checkout";
 import { useDictionary } from "@/context/dictionary-context";
@@ -10,8 +11,8 @@ import { CheckoutItem } from "@/types";
 import { LoaderCircle, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { redirect, usePathname, useRouter } from "next/navigation";
+import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -23,15 +24,36 @@ const CheckoutProduct = ({ product }: CheckoutProductsType) => {
   const checkout = useCheckout();
   const router = useRouter();
   const dict = useDictionary();
-  const [quantity, setQuantity] = useState<number>(product.quantity);
+  const path = usePathname();
+  const isSingleOrderCheckout = !path.endsWith("/checkout");
+  const [quantity, setQuantity] = useState<number>(
+    isSingleOrderCheckout ? checkout.singleOrderQuantity : product.quantity,
+  );
   const [isPending, startTransition] = useTransition();
   const [isPendingSecondary, startSecondaryTransition] = useTransition();
+
+  useEffect(() => {
+    if (isSingleOrderCheckout) {
+      checkout.setSingleOrderQuantity(quantity);
+      return;
+    }
+
+    if (product.quantity === quantity) return;
+
+    updateCart(product.variantAsin, quantity).catch(() =>
+      console.error(dict.crud.error.update),
+    );
+  }, [quantity, product.quantity, product.variantAsin]);
 
   const handleDecrease = async () => {
     const newQuantity = quantity - 1;
 
     setQuantity(newQuantity);
     if (newQuantity === 0) {
+      if (isSingleOrderCheckout) {
+        checkout.setSingleOrderQuantity(1);
+        redirect("/cart");
+      }
       startTransition(async () => {
         checkout?.setIsProcessing(true);
         saveForLaterItem();

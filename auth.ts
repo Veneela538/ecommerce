@@ -36,15 +36,12 @@ export const authConfig = {
                     username,
                     password,
                   }),
-                }
+                },
               );
-              if (!response.ok) {
-                return null;
-              }
               const parsedResponse = await response.json();
               if (!parsedResponse.status) {
                 throw new Error(
-                  parsedResponse.message || "Invalid credentials!"
+                  parsedResponse.message || "Invalid credentials!",
                 );
                 return null;
               }
@@ -56,7 +53,7 @@ export const authConfig = {
               };
             } catch (e) {
               throw new CredentialsSignin(
-                e instanceof Error ? e.message : "Something went wrong!"
+                e instanceof Error ? e.message : "Something went wrong!",
               );
               return null;
             }
@@ -70,7 +67,7 @@ export const authConfig = {
           const authcode = credentials?.username;
           const response = await fetch(
             `${env.NEXT_PUBLIC_BACKEND_APP_URL}/auth/login-by-code?authcode=${authcode}`,
-            { method: "GET", credentials: "include" }
+            { method: "GET", credentials: "include" },
           );
           if (!response.ok) return null;
           const parsedResponse = await response.json();
@@ -93,6 +90,7 @@ export const authConfig = {
   },
   session: {
     strategy: "jwt" as const,
+    maxAge: parseInt(env.AUTH_SESSION_MAX_AGE ?? 600),
   },
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: User }) {

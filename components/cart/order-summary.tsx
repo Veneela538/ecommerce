@@ -6,7 +6,6 @@ import Link from "next/link";
 type OrderSummaryProps = {
   subtotal: number;
   discount: number;
-  tax: number;
   delivery: number;
   totalAmount: number;
 };
@@ -14,7 +13,6 @@ type OrderSummaryProps = {
 const OrderSummary = async ({
   subtotal,
   discount,
-  tax,
   delivery,
   totalAmount,
 }: OrderSummaryProps) => {
@@ -33,12 +31,7 @@ const OrderSummary = async ({
 
         <div className="flex justify-between text-green-600">
           <span>{dict.cart.orderSummary.discount}</span>
-          <span>-₹{discount}</span>
-        </div>
-
-        <div className="flex justify-between">
-          <span>{dict.cart.orderSummary.tax}</span>
-          <span>₹{tax}</span>
+          <span>-₹{subtotal - discount}</span>
         </div>
 
         <div className="flex justify-between">

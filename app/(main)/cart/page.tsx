@@ -37,9 +37,8 @@ const Cart = async () => {
         {/* Order Summary */}
         {CartItems.length > 0 && (
           <OrderSummary
-            subtotal={data.subTotal}
+            subtotal={data.withoutDiscountPrice}
             discount={data.discountedPrice}
-            tax={data.tax}
             delivery={data.shippingCharge}
             totalAmount={data.totalAmount}
           />

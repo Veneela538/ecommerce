@@ -75,37 +75,41 @@ export interface IWishlistProduct {
   addedAt: string;
 }
 
+export interface IOrderSummary {
+  orderId: string;
+  paymentMethod: PaymentMethod;
+  price: number;
+}
+
 export interface IOrder {
   id: number;
   orderNumber: string;
-
-  status:
-    | "CREATED"
-    | "PAYMENT_PENDING"
-    | "PAID"
-    | "SHIPPED"
-    | "DELIVERED"
-    | "CANCELLED"
-    | "RETURNED";
-  paymentStatus: "PENDING" | "SUCCESS" | "FAILED" | "REFUNDED";
-
-  paymentMethod: "UPI" | "CARD" | "NET_BANKING" | "COD" | "WALLET";
+  status: OrderStatus;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
   paymentTransactionId: string;
-
-  subtotal: number;
-  tax: number;
+  price: number;
   shippingCharge: number;
-  discountedPrice: number;
-  totalAmount: number;
-
-  shippingAddress: string;
+  tax: number; // included in price
+  totalAmount: number; // price + shipping charge
+  deliveryAddress: string;
   billingAddress: string;
-
   createdAt: string; // ISO date string
   paidAt: string;
   shippedAt: string;
   deliveredAt: string;
+  orderItemsList: OrderItem[];
 }
+
+export type OrderItem = {
+  variantAsin: string;
+  quantity: number;
+  name: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  totalAmount: number;
+};
 
 export type CheckoutItem = {
   id: number;
@@ -144,3 +148,48 @@ export type UserDetailsResponseType = {
 export type CheckoutStep = "address" | "payment" | "review";
 
 export type PaymentMethod = "UPI" | "CARD" | "NET_BANKING" | "COD" | "WALLET";
+
+export type PaymentDetails = {
+  deliveryAddress: string;
+  paymentMethod: PaymentMethod;
+  price: number;
+  paymentExpiresAt: number;
+};
+
+export type OrderStatus =
+  | "CREATED"
+  | "PAYMENT_PENDING"
+  | "PAID"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED"
+  | "RETURNED";
+
+export type PaymentStatus = "PENDING" | "SUCCESS" | "FAILED" | "REFUNDED";
+
+export interface IReview {
+  name: string;
+  rating: number;
+  reviewTitle: string;
+  reviewMessage: string;
+  imageUrls: string[];
+  variantAttributeList: IVariantAttribute;
+  updatedAt: string;
+}
+
+export interface IVariantAttribute {
+  attributeName: string;
+  attributeValue: string;
+}
+
+export interface IReviewImage {
+  reviewId: number;
+  imageUrl: string;
+}
+
+export interface IRatingCount {
+  rating: number;
+  count: number;
+}
+
+export type ReviewFilter = "ALL_REVIEWS" | "REVIEWS_WITH_IMAGES";

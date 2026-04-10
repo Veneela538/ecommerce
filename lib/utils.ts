@@ -21,3 +21,10 @@ export function buildSlug(text: string) {
 export function unslugify(slug: string) {
   return slug.replace(/-/g, "_").toUpperCase();
 }
+
+export const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });

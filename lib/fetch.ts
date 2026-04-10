@@ -4,6 +4,7 @@
 
 import { env } from "@/lib/env";
 
+import { redirect } from "next/navigation";
 import { getClientHeader } from "./get-headers";
 
 export const fetchWrapper = {
@@ -34,12 +35,12 @@ async function get({ url, accessToken, options }: FetchWithoutBodyType) {
     headers: {
       ...clientHeaders,
       // "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: accessToken ? `Bearer ${accessToken}` : "Bearer-",
     },
     ...options,
   };
   return fetch(`${env.NEXT_PUBLIC_BACKEND_APP_URL}${url}`, requestOptions).then(
-    handleResponse
+    handleResponse,
   );
 }
 
@@ -56,7 +57,7 @@ async function post({ url, accessToken, body, options }: FetchWithBodyType) {
     ...options,
   };
   return fetch(`${env.NEXT_PUBLIC_BACKEND_APP_URL}${url}`, requestOptions).then(
-    handleResponse
+    handleResponse,
   );
 }
 
@@ -73,7 +74,7 @@ async function put({ url, accessToken, body, options }: FetchWithBodyType) {
     ...options,
   };
   return fetch(`${env.NEXT_PUBLIC_BACKEND_APP_URL}${url}`, requestOptions).then(
-    handleResponse
+    handleResponse,
   );
 }
 
@@ -90,7 +91,7 @@ async function patch({ url, accessToken, body, options }: FetchWithBodyType) {
     ...options,
   };
   return fetch(`${env.NEXT_PUBLIC_BACKEND_APP_URL}${url}`, requestOptions).then(
-    handleResponse
+    handleResponse,
   );
 }
 
@@ -107,7 +108,7 @@ async function _delete({ url, accessToken, options }: FetchWithoutBodyType) {
     ...options,
   };
   return fetch(`${env.NEXT_PUBLIC_BACKEND_APP_URL}${url}`, requestOptions).then(
-    handleResponse
+    handleResponse,
   );
 }
 
@@ -124,7 +125,7 @@ function handleResponse(response: Response) {
     // ? Debug Logs
     if (env.DEBUG == "DEBUG") {
       console.log(
-        `${"-".repeat(34)}[${new Date().toUTCString()}]${"-".repeat(34)}`
+        `${"-".repeat(34)}[${new Date().toUTCString()}]${"-".repeat(34)}`,
       );
       console.log({
         statusCode: response.status ?? "",
@@ -135,13 +136,14 @@ function handleResponse(response: Response) {
       console.log(`${"-".repeat(48)}END${"-".repeat(48)}`);
     }
     if (!response.ok) {
-      // const error = (data && data.message) || response.statusText
-      // return Promise.reject(error)
       const error = data ?? response.statusText;
-      if (typeof error === "object" && error !== null) {
-        throw new Error(JSON.stringify(error));
+
+      // 🔥 Detect expired JWT from backend message
+      if (error?.message && error.message.includes("expired")) {
+        redirect("/auth/login?expired=true");
       }
-      throw new Error(String(error));
+
+      throw new Error(error?.message ?? error);
     }
     return data;
   });

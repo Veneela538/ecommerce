@@ -8,7 +8,7 @@ import * as z from "zod";
 
 export const googleLogin = async (
   authcode: string | null,
-  callbackUrl?: string | null
+  callbackUrl?: string | null,
 ) => {
   try {
     await signIn("credentials", {
@@ -30,7 +30,7 @@ export const googleLogin = async (
 
 export const login = async (
   values: z.infer<typeof LoginFormSchema>,
-  callbackUrl?: string | null
+  callbackUrl?: string | null,
 ) => {
   const validatedFields = LoginFormSchema.safeParse(values);
 
@@ -50,10 +50,11 @@ export const login = async (
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
-        case "CredentialsSignin":
-          return { error: error.cause ?? "Incorrect username or password!" };
+        case "CredentialsSignin": {
+          throw new Error("Incorrect username or password!");
+        }
         default:
-          return { error: "Something went wrong!" };
+          throw new Error("Something went wrong!");
       }
     }
     throw error;

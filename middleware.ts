@@ -10,21 +10,20 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
 
   const isPublicRoute =
-    publicRoutes.filter(
-      (item) =>
-        nextUrl.pathname === item || nextUrl.pathname.startsWith(`${item}/`)
-    ).length > 0;
-  const isAuthRoute = nextUrl.pathname.startsWith("/auth");
+    publicRoutes.filter((item) => nextUrl.pathname.startsWith(`${item}`))
+      .length > 0;
 
-  if (nextUrl.pathname == "/") {
-    return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl.origin));
-  }
+  const isAuthRoute = nextUrl.pathname.startsWith("/auth");
 
   if (isAuthRoute) {
     if (isLoggedIn) {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
     return null;
+  }
+
+  if (nextUrl.pathname == "/") {
+    return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl.origin));
   }
 
   if (!isLoggedIn && !isPublicRoute && !isAuthRoute) {

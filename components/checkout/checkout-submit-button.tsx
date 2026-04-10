@@ -4,6 +4,7 @@ import { orderCheckout } from "@/actions/order/multiple-order-checkout";
 import { useCheckout } from "@/context/checkout";
 import { useDictionary } from "@/context/dictionary-context";
 import { LoaderCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
@@ -16,6 +17,7 @@ type CheckoutSubmitButtonType = {
 const CheckoutSubmitButton = ({ variantAsin }: CheckoutSubmitButtonType) => {
   const dict = useDictionary();
   const checkout = useCheckout();
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   function submitCheckout() {
@@ -52,10 +54,25 @@ const CheckoutSubmitButton = ({ variantAsin }: CheckoutSubmitButtonType) => {
         paymentMethod: String(checkout?.paymentMethod),
       };
       try {
+        const currentPath = window.location.pathname;
         if (isSingleOrderCheckout) {
-          await singleOrderCheckout(variantAsin, values);
+          const {
+            data: { paymentToken },
+          } = await singleOrderCheckout(
+            variantAsin,
+            values,
+            checkout.singleOrderQuantity,
+          );
+          router.push(
+            `/checkout/process-payment/${paymentToken}?callbackUrl=${encodeURIComponent(currentPath)}`,
+          );
         } else {
-          await orderCheckout(values);
+          const {
+            data: { paymentToken },
+          } = await orderCheckout(values);
+          router.push(
+            `/checkout/process-payment/${paymentToken}?callbackUrl=${encodeURIComponent(currentPath)}`,
+          );
         }
       } catch (err) {
         throw new Error("Checkout failed, Something went wrong");

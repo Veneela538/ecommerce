@@ -71,7 +71,7 @@ export default function CheckoutPopup({
             setError("Invalid product selected");
             return;
           }
-          await singleOrderCheckout(String(variantId), values);
+          await singleOrderCheckout(String(variantId), values, 1);
         } else {
           await orderCheckout(values);
         }
@@ -103,7 +103,7 @@ export default function CheckoutPopup({
           {/* Screen-reader only title */}
           <AlertDialogTitle className="sr-only">Checkout</AlertDialogTitle>
           <div className="relative">
-            <button
+            <Button
               onClick={() => {
                 onClose();
                 form.reset();
@@ -113,7 +113,7 @@ export default function CheckoutPopup({
              rounded-full p-1 hover:bg-gray-200 transition"
             >
               <X className="w-4 h-4" />
-            </button>
+            </Button>
             <CardWrapper headerLabel="Checkout">
               <Form {...form}>
                 <form

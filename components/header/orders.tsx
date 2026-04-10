@@ -1,11 +1,21 @@
 import getAllOrders from "@/actions/order/get-all-orders";
 import { getDictionary } from "@/lib/dictionaries";
 import { IOrder } from "@/types";
+import Link from "next/link";
+import DownloadInvoiceButton from "../download-invoice";
 
-const Orders = async () => {
+type params = {
+  page?: number;
+};
+
+const Orders = async ({ page = 1 }: params) => {
   const dict = await getDictionary("en");
 
-  const { data: orders } = await getAllOrders();
+  const { data } = await getAllOrders(page - 1);
+
+  const orders = data?.content || [];
+  const totalPages = data?.totalPages || 1;
+  const currentPage = data?.number + 1 || 1;
 
   if (!orders || orders.length === 0) {
     return (
@@ -54,7 +64,6 @@ const Orders = async () => {
               </p>
             )}
           </div>
-
           {/* INFO GRID */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 py-4 border-t text-sm">
             <div>
@@ -62,7 +71,7 @@ const Orders = async () => {
                 {dict.orders.shippingAddress}
               </p>
               <p className="text-gray-600 whitespace-pre-line">
-                {order.shippingAddress}
+                {order.deliveryAddress}
               </p>
             </div>
 
@@ -87,7 +96,7 @@ const Orders = async () => {
           <div className="px-4 py-4 border-t text-sm space-y-1">
             <div className="flex justify-between">
               <span>{dict.orders.subTotal}</span>
-              <span>₹{order.subtotal}</span>
+              <span>₹{order.price}</span>
             </div>
             <div className="flex justify-between">
               <span>{dict.orders.tax}</span>
@@ -104,13 +113,52 @@ const Orders = async () => {
           </div>
 
           {/* ACTIONS */}
-          <div className="px-4 py-3 border-t flex flex-wrap gap-4 text-sm">
-            <button className="text-blue-600 hover:underline">
-              {dict.orders.downloadInvoice}
-            </button>
+          <div className="px-4 py-3 border-t flex flex-wrap gap-4 text-sm justify-between">
+            <DownloadInvoiceButton orderNumber={order.orderNumber} />
+            <Link
+              href={`/orders/${order.orderNumber}`}
+              className="text-blue-600 hover:underline"
+            >
+              View Order
+            </Link>
           </div>
         </div>
       ))}
+
+      <div className="flex justify-center gap-2 mt-6">
+        {/* Prev */}
+        <Link
+          href={`?page=${currentPage - 1}`}
+          className={`px-3 py-1 border rounded ${
+            currentPage === 1 ? "pointer-events-none opacity-50" : ""
+          }`}
+        >
+          Prev
+        </Link>
+
+        {/* Page Numbers */}
+        {Array.from({ length: totalPages }, (_, i) => (
+          <Link
+            key={i}
+            href={`?page=${i}`}
+            className={`px-3 py-1 border rounded ${
+              i === currentPage ? "bg-blue-500 text-white" : ""
+            }`}
+          >
+            {i + 1}
+          </Link>
+        ))}
+
+        {/* Next */}
+        <Link
+          href={`?page=${currentPage + 1}`}
+          className={`px-3 py-1 border rounded ${
+            currentPage === totalPages ? "pointer-events-none opacity-50" : ""
+          }`}
+        >
+          Next
+        </Link>
+      </div>
     </div>
   );
 };

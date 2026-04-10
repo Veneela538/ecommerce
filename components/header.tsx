@@ -3,17 +3,19 @@
 import { useDictionary } from "@/context/dictionary-context";
 import { buildSlug } from "@/lib/utils";
 import { ShoppingCart } from "lucide-react";
+import { User } from "next-auth";
 import Link from "next/link";
 import MyAccount from "./header/myaccount";
 import SearchBar from "./header/search-bar";
 
 type HeaderType = {
-  isAuthenticated: boolean;
+  user?: User;
   categories: string[];
 };
 
-export default function Header({ isAuthenticated, categories }: HeaderType) {
+export default function Header({ user, categories }: HeaderType) {
   const dict = useDictionary();
+  const isAuthenticated = !!user?.userId;
   return (
     <main>
       <header className="bg-gray-800 text-white p-4">
@@ -39,7 +41,7 @@ export default function Header({ isAuthenticated, categories }: HeaderType) {
               {isAuthenticated && (
                 <>
                   <li>
-                    <MyAccount />
+                    <MyAccount role={user?.role} />
                   </li>
                 </>
               )}

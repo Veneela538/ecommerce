@@ -16,6 +16,8 @@ type CheckoutContextType = {
   setStage: (data: "delivery" | "billing" | "payment" | "review") => void;
   isProcessing: boolean;
   setIsProcessing: (val: boolean) => void;
+  singleOrderQuantity: number;
+  setSingleOrderQuantity: (val: number) => void;
 };
 
 const CheckoutContext = createContext<CheckoutContextType | null>(null);
@@ -25,11 +27,13 @@ export const CheckoutProvider = ({
   deliveryAddressValue,
   billingAddressValue,
   paymentMethodValue,
+  singleOrderQuantityValue,
 }: {
   children: ReactNode;
   deliveryAddressValue: AddressResponseType | null;
   billingAddressValue: AddressResponseType | null;
   paymentMethodValue: PaymentMethod | null;
+  singleOrderQuantityValue?: number;
 }) => {
   const [deliveryAddress, setDeliveryAddress] =
     useState<AddressResponseType | null>(deliveryAddressValue);
@@ -43,6 +47,9 @@ export const CheckoutProvider = ({
     "delivery" | "billing" | "payment" | "review"
   >("delivery");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [singleOrderQuantity, setSingleOrderQuantity] = useState(
+    singleOrderQuantityValue ?? 1,
+  );
 
   return (
     <CheckoutContext.Provider
@@ -59,6 +66,8 @@ export const CheckoutProvider = ({
         setStage,
         isProcessing,
         setIsProcessing,
+        singleOrderQuantity,
+        setSingleOrderQuantity,
       }}
     >
       {children}

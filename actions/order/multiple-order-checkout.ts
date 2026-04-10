@@ -14,11 +14,16 @@ export const orderCheckout = async (
     return { status: false, message: "Invalid fields!" };
   }
 
+  const { shippingAddress, ...rest } = values;
+
   try {
     return await fetchWrapper.post({
       url: `/user/order`,
       accessToken: session?.accessToken,
-      body: values,
+      body: {
+        ...rest,
+        deliveryAddress: shippingAddress,
+      },
     });
   } catch (error) {
     throw error;

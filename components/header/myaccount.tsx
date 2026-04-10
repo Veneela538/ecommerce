@@ -22,7 +22,11 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-const MyAccount = () => {
+type props = {
+  role?: string;
+};
+
+const MyAccount = ({ role }: props) => {
   const dict = useDictionary();
   return (
     <>
@@ -59,6 +63,17 @@ const MyAccount = () => {
                 <span>{dict.header.myAccount.notifications}</span>
               </Link>
             </DropdownMenuItem>
+            {!(role === "CUSTOMER") && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/addProduct">
+                    <Heart />
+                    <span>{dict.header.myAccount.wishlist}</span>
+                  </Link>
+                </DropdownMenuItem>
+              </>
+            )}
             <DropdownMenuSeparator />
             <AlertDialogTrigger asChild>
               <DropdownMenuItem>

@@ -44,7 +44,7 @@ export const Item = ({ product }: DisplayProductsType) => {
           </CardTitle>
           <CardDescription className="text-gray-800 font-bold text-lg flex justify-between">
             <p className="strong">₹{product.price}</p>
-            <p>{product.rating}⭐</p>
+            <p>{product.rating?.toFixed(1)}⭐</p>
           </CardDescription>
         </CardContent>
       </Link>

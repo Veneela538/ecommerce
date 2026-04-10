@@ -20,7 +20,8 @@ export default async function MainLayout({
   return (
     <>
       <Header
-        isAuthenticated={!!session?.user?.userId}
+        // isAuthenticated={!!session?.user?.userId}
+        user={session?.user}
         categories={categories?.data ?? []}
       />
       <div className="min-h-screen flex-grow">{children}</div>
