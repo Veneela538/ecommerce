@@ -3,6 +3,7 @@ import { buildSlug, formatDate } from "@/lib/utils";
 import { IOrder } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+import DownloadInvoiceButton from "./download-invoice";
 import OrderTracking from "./order-tracking";
 import WriteReview from "./write-review";
 
@@ -20,7 +21,10 @@ const Order = async ({ order }: Props) => {
         <div className="max-w-5xl mx-auto p-4 bg-gray-100">
           <div className="flex flex-col gap-1 bg-white border border-gray-200 rounded-xl shadow-sm p-4 hover:shadow-md transition">
             <div className="flex flex-col gap-1">
-              <h1 className="text-2xl font-semibold">Order Details</h1>
+              <div className="flex flex-row justify-between">
+                <h1 className="text-2xl font-semibold">Order Details</h1>
+                <DownloadInvoiceButton orderNumber={order.orderNumber} />
+              </div>
               <p>
                 Order placed {formatDate(order.createdAt)} | Order number{" "}
                 {order.orderNumber}

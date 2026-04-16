@@ -1,4 +1,4 @@
-import CheckoutHeader from "@/components/checkout/header";
+import CheckoutHeader from "@/components/checkout/checkout-header";
 import Payment from "@/components/checkout/payment";
 import ReviewItems from "@/components/checkout/review";
 import { CheckoutItem } from "@/types";

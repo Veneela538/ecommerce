@@ -50,17 +50,17 @@ const UpdateCredentials = () => {
     //   setError("Token Expired!");
     //   return;
     // }
-    startSubmitTransition(() => {
+    startSubmitTransition(async () => {
       updateCredentials(values, token)
-        .then(() => {
+        .then(async () => {
           const loginData: LoginFormData = {
             username: values.username,
             password: values.password,
           };
-          login(loginData).catch(() => {
+          await login(loginData).catch(() => {
             setError(dict.common.somethingWentWrong);
           });
-          router.push("/home");
+          window.location.assign("/home");
         })
         .catch(() => {
           setError(dict.common.somethingWentWrong);

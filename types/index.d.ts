@@ -134,7 +134,7 @@ export type AddressResponseType = {
   state: string;
   country: string;
   phoneNumber: string; //don't use maximum use UserDetailsResponseType phone number if possible.
-  alternativePhoneNumber: string;
+  alternativePhoneNumber?: string;
 };
 
 export type UserDetailsResponseType = {

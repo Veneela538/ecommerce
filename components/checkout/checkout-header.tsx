@@ -1,5 +1,6 @@
 import { getDictionary } from "@/lib/dictionaries";
 import { ShoppingCart } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const CheckoutHeader = async () => {
@@ -9,9 +10,16 @@ const CheckoutHeader = async () => {
       <header className="bg-gray-800 text-white p-4">
         <div className="container mx-auto flex justify-between items-center gap-6">
           {/* Logo / App Name */}
-          <Link href={"/home"}>
-            <h1 className="text-xl font-bold">{dict.checkout.header.home}</h1>
-          </Link>
+          <a href="/home">
+            <Image
+              src="/logo.jpg"
+              alt="Logo"
+              width={120}
+              height={40}
+              className="cursor-pointer"
+              unoptimized
+            />
+          </a>
           <h1 className="text-xl font-bold">{dict.checkout.header.title}</h1>
           <Link
             href="/cart"

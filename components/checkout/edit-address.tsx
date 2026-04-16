@@ -51,7 +51,7 @@ export default function EditAddressPopup({ address }: EditAddressPopupType) {
       country: address?.country || "",
       name: address?.name || "",
       phoneNumber: String(address?.phoneNumber) || "",
-      alternativePhoneNumber: String(address?.alternativePhoneNumber) || "",
+      alternativePhoneNumber: address?.alternativePhoneNumber ?? "",
       pincode: address?.pincode || "",
       addressLine1: address?.addressLine1 || "",
       addressLine2: address?.addressLine2 || "",
