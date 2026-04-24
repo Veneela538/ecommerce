@@ -1,4 +1,4 @@
-"use server";
+"use client";
 
 import getCategoryProducts from "@/actions/categories/category-products";
 import {
@@ -8,31 +8,86 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { getDictionary } from "@/lib/dictionaries";
+import { useDictionary } from "@/context/dictionary-context";
 import { ICategoryProduct } from "@/types";
+import { useEffect, useState } from "react";
 import { Item } from "./item";
 
-type DisplayProductsListType = {
+export const ProductsList = ({
+  category,
+  initialProducts,
+  totalPages,
+}: {
   category: string;
-};
+  initialProducts: ICategoryProduct[];
+  totalPages: number;
+}) => {
+  const dict = useDictionary();
 
-export const ProductsList = async ({ category }: DisplayProductsListType) => {
-  const dict = await getDictionary("en");
-  const {
-    data: { content },
-  } = await getCategoryProducts(category);
+  const [products, setProducts] = useState<ICategoryProduct[]>(initialProducts);
+  const [page, setPage] = useState(0);
+
+  const ITEMS_PER_PAGE = 4;
+
+  const fetchProducts = async (pageNumber: number) => {
+    const { data } = await getCategoryProducts(
+      category,
+      pageNumber,
+      ITEMS_PER_PAGE,
+    );
+
+    const newItems = data?.content || [];
+
+    let finalItems = newItems;
+
+    // ✅ last page handling (fill from previous)
+    if (newItems.length < ITEMS_PER_PAGE && pageNumber === totalPages - 1) {
+      const remaining = ITEMS_PER_PAGE - newItems.length;
+      const fallback = products.slice(-remaining);
+
+      finalItems = [...fallback, ...newItems];
+    }
+
+    setProducts(finalItems);
+  };
+
+  // ✅ reset when category changes
+  useEffect(() => {
+    setPage(0);
+    setProducts(initialProducts);
+  }, [category, initialProducts]);
+
+  const handleNext = async () => {
+    if (page < totalPages - 1) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      await fetchProducts(nextPage);
+    }
+  };
+
+  const handlePrevious = async () => {
+    if (page > 0) {
+      const prevPage = page - 1;
+      setPage(prevPage);
+      await fetchProducts(prevPage);
+    }
+  };
+
+  const isNextDisabled = page >= totalPages - 1;
+  const isPrevDisabled = page === 0;
 
   return (
     <div>
       <h1 className="text-3xl font-bold text-center text-[#232f3e] mb-10">
         {category} {dict.category.title}
       </h1>
+
       <Carousel className="w-full max-w-full">
         <CarouselContent>
-          {content?.map((product: ICategoryProduct) => (
+          {products.map((product) => (
             <CarouselItem
               key={product.variantAsin}
-              className="md:basis-1/3 lg:basis-1/4"
+              className="basis-1/2 md:basis-1/3 lg:basis-1/4"
             >
               <div className="p-1">
                 <Item product={product} />
@@ -40,8 +95,10 @@ export const ProductsList = async ({ category }: DisplayProductsListType) => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
+
+        <CarouselPrevious onClick={handlePrevious} disabled={isPrevDisabled} />
+
+        <CarouselNext onClick={handleNext} disabled={isNextDisabled} />
       </Carousel>
     </div>
   );

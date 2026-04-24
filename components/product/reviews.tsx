@@ -3,12 +3,13 @@
 import getReviews from "@/actions/review/get_reviews";
 import ReviewCard from "@/components/product/review-card";
 import { Button } from "@/components/ui/button";
+import { useDictionary } from "@/context/dictionary-context";
 import { buildSlug } from "@/lib/utils";
 import { IRatingCount, IReview, ReviewFilter } from "@/types";
 import { Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type Props = {
   asin: string;
@@ -31,64 +32,101 @@ export default function Reviews({
   rating,
   imageUrl,
 }: Props) {
+  const dict = useDictionary();
   const [reviews, setReviews] = useState<IReview[]>(initialReviews);
-  const [page, setPage] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+
+  const [meta, setMeta] = useState({
+    page: 0,
+    loading: false,
+    hasMore: true,
+  });
+
   const [ratingFilter, setRatingFilter] = useState<number | undefined>(
     undefined,
   );
   const [mediaFilter, setMediaFilter] = useState<ReviewFilter>("ALL_REVIEWS");
-  async function loadMoreReviews(reset = false) {
+
+  // ✅ single source of truth function
+  async function fetchReviews({
+    page,
+    rating,
+    media,
+    reset = false,
+  }: {
+    page: number;
+    rating?: number;
+    media: ReviewFilter;
+    reset?: boolean;
+  }) {
     try {
-      setLoading(true);
+      setMeta((prev) => ({ ...prev, loading: true }));
 
-      const nextPage = reset ? 0 : page + 1;
+      const res = await getReviews(asin, page, 5, rating, media);
 
-      const res = await getReviews(
-        asin,
-        nextPage,
-        5,
-        ratingFilter,
-        mediaFilter,
-      );
+      const data = res?.data;
+      const newReviews = data?.content || [];
 
-      const newReviews = res?.data?.content || [];
+      const totalElements = data?.totalElements || 0;
+      const pageSize = data?.size || 5;
+      const pageNumber = data?.number ?? page;
 
-      if (reset) {
-        // ✅ replace when filter changes
-        setReviews(newReviews);
-      } else {
-        // ✅ append when clicking "show more"
-        setReviews((prev) => [...prev, ...newReviews]);
-      }
+      const hasMore = totalElements > (pageNumber + 1) * pageSize;
 
-      setPage(nextPage);
+      setReviews((prev) => (reset ? newReviews : [...prev, ...newReviews]));
 
-      // ✅ check if more pages exist
-      if (newReviews.length < 5) {
-        setHasMore(false);
-      } else {
-        setHasMore(true);
-      }
+      setMeta({
+        page: pageNumber,
+        loading: false,
+        hasMore,
+      });
     } catch (err) {
       console.error("Failed to fetch reviews", err);
-    } finally {
-      setLoading(false);
+      setMeta((prev) => ({ ...prev, loading: false }));
     }
   }
-  useEffect(() => {
-    // when filters change → reload from page 0
-    loadMoreReviews(true);
-  }, [ratingFilter, mediaFilter]);
+
+  // ✅ filter change handlers (NO useEffect)
+  const handleRatingChange = (value: string) => {
+    const newRating = value === "ALL" ? undefined : Number(value);
+
+    setRatingFilter(newRating);
+
+    fetchReviews({
+      page: 0,
+      rating: newRating,
+      media: mediaFilter,
+      reset: true,
+    });
+  };
+
+  const handleMediaChange = (value: ReviewFilter) => {
+    setMediaFilter(value);
+
+    fetchReviews({
+      page: 0,
+      rating: ratingFilter,
+      media: value,
+      reset: true,
+    });
+  };
+
+  const handleLoadMore = () => {
+    fetchReviews({
+      page: meta.page + 1,
+      rating: ratingFilter,
+      media: mediaFilter,
+    });
+  };
+
   return (
     <>
       <div className="flex gap-4">
-        {/* LEFT → 1/4 */}
+        {/* LEFT */}
         <div className="w-1/4 p-4">
-          <h1 className="text-2xl font-bold mb-4">Customer Reviews</h1>
+          <h1 className="text-2xl font-bold mb-4">
+            {dict.reviews.customerReviews}
+          </h1>
 
-          {/* Overall Rating */}
           <div className="flex items-center gap-2 mb-2">
             <span className="text-xl font-bold">{rating.toFixed(1)}</span>
 
@@ -107,10 +145,9 @@ export default function Reviews({
           </div>
 
           <p className="text-sm text-gray-500 mb-3">
-            {totalCount} global ratings
+            {totalCount} {dict.reviews.globalRatings}
           </p>
 
-          {/* Rating Breakdown */}
           <div className="space-y-2">
             {[5, 4, 3, 2, 1].map((star) => {
               const found = ratingCount.find((r) => r.rating === star);
@@ -136,9 +173,8 @@ export default function Reviews({
           </div>
         </div>
 
-        {/* RIGHT → 3/4 */}
+        {/* RIGHT */}
         <div className="w-3/4 flex gap-4 p-6">
-          {/* Product Image */}
           <div className="relative w-40 h-40 bg-white border rounded-lg flex-shrink-0">
             <Link href={`/product/${buildSlug(productName)}/${asin}`}>
               <Image
@@ -150,7 +186,6 @@ export default function Reviews({
             </Link>
           </div>
 
-          {/* Product Details */}
           <div className="w-2/3">
             <Link
               href={`/product/${buildSlug(productName)}/${asin}`}
@@ -159,50 +194,52 @@ export default function Reviews({
               {productDescription}
             </Link>
             <p className="text-sm text-gray-600 mt-2">
-              {totalCount} reviews • {rating.toFixed(1)} average rating
+              {totalCount} {dict.reviews.reviews} • {rating.toFixed(1)}{" "}
+              {dict.reviews.averageRating}
             </p>
           </div>
         </div>
       </div>
+
       <div className="max-w-4xl p-6">
         {/* Filters */}
         <div className="flex gap-4 mb-4 items-center">
-          {/* ⭐ Rating Filter */}
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">Rating:</label>
+            <label className="text-sm font-medium">
+              {dict.reviews.rating}:
+            </label>
 
             <select
               value={ratingFilter ?? "ALL"}
-              onChange={(e) => {
-                const value = e.target.value;
-                setRatingFilter(value === "ALL" ? undefined : Number(value));
-              }}
+              onChange={(e) => handleRatingChange(e.target.value)}
               className="border rounded px-2 py-1 text-sm"
             >
-              <option value="ALL">All stars</option>
-              <option value="5">5 star only</option>
-              <option value="4">4 star only</option>
-              <option value="3">3 star only</option>
-              <option value="2">2 star only</option>
-              <option value="1">1 star only</option>
+              <option value="ALL">{dict.reviews.all}</option>
+
+              {[5, 4, 3, 2, 1].map((star) => (
+                <option key={star} value={star}>
+                  {dict.reviews.starOnly.replace("{{count}}", String(star))}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* 📷 Media Filter */}
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium">Type:</label>
+            <label className="text-sm font-medium">{dict.reviews.type}:</label>
 
             <select
               value={mediaFilter}
               onChange={(e) =>
-                setMediaFilter(
+                handleMediaChange(
                   e.target.value as "ALL_REVIEWS" | "REVIEWS_WITH_IMAGES",
                 )
               }
               className="border rounded px-2 py-1 text-sm"
             >
-              <option value="ALL_REVIEWS">All reviews</option>
-              <option value="REVIEWS_WITH_IMAGES">Reviews with images</option>
+              <option value="ALL_REVIEWS">{dict.reviews.allReviews}</option>
+              <option value="REVIEWS_WITH_IMAGES">
+                {dict.reviews.reviewsWithImages}
+              </option>
             </select>
           </div>
         </div>
@@ -214,24 +251,19 @@ export default function Reviews({
           ))}
         </div>
 
-        {/* Loader */}
-        {loading && (
-          <p className="text-center text-gray-500 mt-4">Loading...</p>
-        )}
-
         <div className="flex mt-6">
-          {hasMore ? (
+          {meta.hasMore ? (
             <Button
               variant="outline"
-              onClick={() => loadMoreReviews(false)}
-              disabled={loading}
+              onClick={handleLoadMore}
+              disabled={meta.loading}
             >
-              {loading ? "Loading..." : "Show 5 more reviews"}
+              {meta.loading
+                ? dict.reviews.loading
+                : dict.reviews.show5MoreReviews}
             </Button>
           ) : (
-            <p className="text-sm text-gray-600">
-              To see more, search or filter all reviews
-            </p>
+            <p className="text-sm text-gray-600">{dict.reviews.seeMore}</p>
           )}
         </div>
       </div>

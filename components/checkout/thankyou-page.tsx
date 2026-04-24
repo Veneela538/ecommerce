@@ -34,9 +34,9 @@ export default function ThankYouPage({ order }: Props) {
 
           <span>|</span>
 
-          <Link href="/home" className="text-gray-700 hover:underline">
+          <a href="/home" className="text-gray-700 hover:underline">
             Continue Shopping
-          </Link>
+          </a>
         </div>
       </div>
     </div>

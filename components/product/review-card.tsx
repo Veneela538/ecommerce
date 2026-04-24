@@ -1,5 +1,6 @@
 "use client";
 
+import { useDictionary } from "@/context/dictionary-context";
 import { formatDate } from "@/lib/utils";
 import { IReview } from "@/types";
 import { Star } from "lucide-react";
@@ -11,6 +12,7 @@ type Props = {
 };
 
 const ReviewCard = ({ review }: Props) => {
+  const dict = useDictionary();
   return (
     <div className="border-b pb-5">
       {/* Name + Rating (Amazon style) */}
@@ -46,11 +48,11 @@ const ReviewCard = ({ review }: Props) => {
       </div>
 
       <p className="text-sm text-gray-500 mt-1">
-        Reviewed on {formatDate(review.updatedAt)}
+        {dict.reviews.reviewedOn} {formatDate(review.updatedAt)}
       </p>
 
       <p className="text-sm text-green-600 font-medium mt-1">
-        Verified Purchase
+        {dict.reviews.verifiedPurchase}
       </p>
 
       {/* Review Message */}

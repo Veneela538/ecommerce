@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { getDictionary } from "@/lib/dictionaries";
 import { buildSlug, formatDate } from "@/lib/utils";
 import { IOrder } from "@/types";
 import Image from "next/image";
@@ -11,8 +12,8 @@ type Props = {
   order: IOrder;
 };
 const Order = async ({ order }: Props) => {
+  const dict = await getDictionary("en");
   const session = await auth();
-
   const username = session?.user?.name;
   return (
     <>
@@ -22,39 +23,45 @@ const Order = async ({ order }: Props) => {
           <div className="flex flex-col gap-1 bg-white border border-gray-200 rounded-xl shadow-sm p-4 hover:shadow-md transition">
             <div className="flex flex-col gap-1">
               <div className="flex flex-row justify-between">
-                <h1 className="text-2xl font-semibold">Order Details</h1>
+                <h1 className="text-2xl font-semibold">
+                  {dict.orders.orderDetails}
+                </h1>
                 <DownloadInvoiceButton orderNumber={order.orderNumber} />
               </div>
               <p>
-                Order placed {formatDate(order.createdAt)} | Order number{" "}
-                {order.orderNumber}
+                {dict.orders.orderPlaced} {formatDate(order.createdAt)} |{" "}
+                {dict.orders.orderNumber} {order.orderNumber}
               </p>
             </div>
             <div className="flex flex-col gap-4">
               <div className="border border-gray-200 rounded-xl shadow-sm grid grid-cols-3 gap-4 p-4 hover:shadow-md transition">
                 <div className="flex flex-col">
-                  <p className="text-md font-bold pb-1">Ship to</p>
+                  <p className="text-md font-bold pb-1">{dict.orders.shipTo}</p>
                   <p>{username}</p>
                   <p>{order.deliveryAddress}</p>
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-md font-bold pb-1">Payment method</p>
+                  <p className="text-md font-bold pb-1">
+                    {dict.orders.paymentMethod}
+                  </p>
                   <p>{order.paymentMethod}</p>
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-md font-bold pb-1">Order Summary</p>
+                  <p className="text-md font-bold pb-1">
+                    {dict.orders.orderSummary}
+                  </p>
 
                   <div className="grid grid-cols-2 gap-x-10 gap-y-1">
-                    <p>Item(s) Subtotal:</p>
+                    <p>{dict.orders.itemsSubtotal}:</p>
                     <p className="text-right">₹{order.price}</p>
 
-                    <p>Shipping:</p>
+                    <p>{dict.orders.shippingCharge}:</p>
                     <p className="text-right">₹{order.shippingCharge}</p>
 
-                    <p>Total:</p>
+                    <p>{dict.orders.total}:</p>
                     <p className="text-right">₹{order.totalAmount}</p>
 
-                    <p className="font-bold">Grand Total:</p>
+                    <p className="font-bold">{dict.orders.grandTotal}:</p>
                     <p className="font-bold text-right">₹{order.totalAmount}</p>
                   </div>
                 </div>
@@ -106,7 +113,7 @@ const Order = async ({ order }: Props) => {
                           href={`/review/${item.variantAsin}`}
                           className="border border-gray-700 rounded-xl font-medium text-blue-600 p-2 mt-2 hover:underline"
                         >
-                          Write a product review
+                          {dict.orders.writeAProductReview}
                         </Link>
                         {/* </div> */}
                         <div className="mt-6">

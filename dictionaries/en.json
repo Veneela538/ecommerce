@@ -3,7 +3,9 @@
     "pleaseWait": "Please Wait",
     "somethingWentWrong": "Something went wrong",
     "pageLoadError": "We couldn’t load this page. Please retry or try again later.",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "previous": "Prev",
+    "next": "Next"
   },
   "auth": {
     "login": {
@@ -130,7 +132,8 @@
     "error": {
       "create": "Error creating record",
       "update": "Error updating record",
-      "delete": "Error deleting record"
+      "delete": "Error deleting record",
+      "fetchImages": "Error fetching Images"
     }
   },
   "product": {
@@ -186,7 +189,16 @@
     "tax": "Tax",
     "shippingCharge": "Shipping",
     "orderTotal": "Order Total",
-    "downloadInvoice": "Download Invoice"
+    "downloadInvoice": "Download Invoice",
+    "orderDetails": "Order Details",
+    "orderNumber": "Order number",
+    "shipTo": "Ship to",
+    "paymentMethod": "Payment Method",
+    "orderSummary": "Order Summary",
+    "itemsSubtotal": "Item(s) Subtotal",
+    "grandTotal": "Grand Total",
+    "writeAProductReview": "Write a product review",
+    "viewOrder": "View Order"
   },
   "wishlist": {
     "title": "Wishlist Products",
@@ -220,5 +232,28 @@
   },
   "footer": {
     "body": " My E-Commerce App. All rights reserved."
+  },
+  "reviews": {
+    "customerReviews": "Customer Reviews",
+    "globalRatings": "global ratings",
+    "reviews": "Reviews",
+    "averageRating": "average rating",
+    "rating": "Rating",
+    "all": "All stars",
+    "starOnly": "{{count}} star only",
+    "type": "Type",
+    "allReviews": "All reviews",
+    "reviewsWithImages": "Reviews with images",
+    "loading": "Loading...",
+    "show5MoreReviews": "Show 5 more reviews",
+    "seeMore": "To see more, search or filter all reviews",
+    "customerPhotosAndVideos": "Customer photos and videos",
+    "seeAll": "See all",
+    "seeMoreReviews": "See more reviews",
+    "reviewedOn": "Reviewed on",
+    "verifiedPurchase": "Verified Purchase",
+    "add": "Add",
+    "remove": "Remove",
+    "submitReview": "Submit Review"
   }
 }

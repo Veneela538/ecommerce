@@ -48,14 +48,15 @@ const WishlistItem = ({ product }: WishlistProductsType) => {
   return (
     <Card className="flex flex-col">
       <div className="relative flex flex-row gap-6 border border-gray-200 rounded-xl shadow-sm p-4 hover:shadow-md transition">
-        <button
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
           onClick={remove}
-          className="absolute top-3 right-3 text-gray-500 hover:text-black 
-             rounded-full p-1 hover:bg-gray-200 transition"
-          aria-label="Remove from wishlist"
+          className="absolute top-3 right-3 text-gray-600 hover:text-black"
         >
           <X className="w-4 h-4" />
-        </button>
+        </Button>
 
         {/* ================================================================= */}
         {/*  ✅ PART 1 — PRODUCT IMAGE                                       */}

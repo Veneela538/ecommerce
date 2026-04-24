@@ -1,6 +1,10 @@
 import { z } from "zod";
 
 export const ReviewFormSchema = z.object({
+  reviewTitle: z
+    .string()
+    .min(1, "Review title cannot be empty")
+    .max(300, "Review title cannot exceed 300 characters"),
   rating: z
     .number()
     .int()

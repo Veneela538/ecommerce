@@ -119,7 +119,7 @@ const Orders = async ({ page = 1 }: params) => {
               href={`/orders/${order.orderNumber}`}
               className="text-blue-600 hover:underline"
             >
-              View Order
+              {dict.orders.viewOrder}
             </Link>
           </div>
         </div>
@@ -133,7 +133,7 @@ const Orders = async ({ page = 1 }: params) => {
             currentPage === 1 ? "pointer-events-none opacity-50" : ""
           }`}
         >
-          Prev
+          {dict.common.previous}
         </Link>
 
         {/* Page Numbers */}
@@ -156,7 +156,7 @@ const Orders = async ({ page = 1 }: params) => {
             currentPage === totalPages ? "pointer-events-none opacity-50" : ""
           }`}
         >
-          Next
+          {dict.common.next}
         </Link>
       </div>
     </div>
